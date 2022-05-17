@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <g id="Flyer" transform="translate(-5250 4022)">
+    <g id="Envelope" transform="translate(5250 -4022)">
+      <g id="Group_1083" data-name="Group 1083">
+        <path id="Path_522" data-name="Path 522" d="M0,0V60a4,4,0,0,0,4,4H60a4,4,0,0,0,4-4V0Z" fill="#e7bf55"/>
+      </g>
+    </g>
+    <g id="Envelope_1_" transform="translate(5250 -4022)">
+      <g id="Group_1084" data-name="Group 1084">
+        <path id="Path_523" data-name="Path 523" d="M0,0S.831,16,6,16H58c5.169,0,6-16,6-16Z" fill="#cca352"/>
+      </g>
+    </g>
+    <g id="String_1_" transform="translate(5250 -4022)">
+      <g id="Group_1085" data-name="Group 1085">
+        <path id="Path_524" data-name="Path 524" d="M36,8H34l-2,5.333L30,8H28l3,8-3,8h2l2-5.333L34,24h2l-3-8Z" fill="#997a3d" fill-rule="evenodd"/>
+      </g>
+    </g>
+    <g id="Elipse" transform="translate(5250 -4022)">
+      <g id="Group_1086" data-name="Group 1086">
+        <circle id="Ellipse_62" data-name="Ellipse 62" cx="4" cy="4" r="4" transform="translate(28 20)" fill="#fff"/>
+      </g>
+    </g>
+    <g id="Elipse_1_" transform="translate(5250 -4022)">
+      <g id="Group_1087" data-name="Group 1087">
+        <circle id="Ellipse_63" data-name="Ellipse 63" cx="4" cy="4" r="4" transform="translate(28 4)" fill="#fff"/>
+      </g>
+    </g>
+  </g>
+</svg>
