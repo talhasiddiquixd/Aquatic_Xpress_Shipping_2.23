@@ -316,12 +316,11 @@ class _BoxListViewState extends State<BoxListView> {
   deleteBox(id) async {
     String? token = await getToken();
 
-    String ?link = "${getCloudUrl()}/api/BoxPref/" +
-        id.toString();
+    String ?link = "${getCloudUrl()}/api/BoxPref/$id";
     // "${getCloudUrl()}​/api​/ShipmentOrder​/getfedexorderlist";
 
     var url = Uri.parse(link);
-    var response = await http.delete(
+    var response = await http.post(
       url,
       headers: {
         "Authorization": "Bearer $token",

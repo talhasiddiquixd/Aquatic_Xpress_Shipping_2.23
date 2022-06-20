@@ -163,20 +163,19 @@ class _SignFormState extends State<SignForm> {
                 SizedBox(height: getProportionateScreenHeight(30)),
                 Row(
                   children: [
-                    Checkbox(
-                      value: remember,
-                      activeColor: kPrimaryColor,
-                      onChanged: (value) {
-                        setState(() {
-                          remember = value!;
-                        });
-                      },
-                    ),
-                    Text("Remember me"),
+                    // Checkbox(
+                    //   value: remember,
+                    //   activeColor: kPrimaryColor,
+                    //   onChanged: (value) {
+                    //     setState(() {
+                    //       remember = value!;
+                    //     });
+                    //   },
+                    // ),
+                    // Text("Remember me"),
                     Spacer(),
                     GestureDetector(
-                      onTap: () => Navigator.pushNamed(
-                          context, ForgotPasswordScreen.routeName),
+                      onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ForgotPasswordScreen())),
                       child: Text(
                         "Forgot Password",
                         style: TextStyle(decoration: TextDecoration.underline),

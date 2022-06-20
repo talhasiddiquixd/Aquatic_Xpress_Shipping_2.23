@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:aquatic_xpress_shipping/screens/admin/Service/ServiceHistory.dart';
 import 'package:flutter/material.dart';
 import 'package:aquatic_xpress_shipping/models/SharedPref.dart';
 import 'package:http/http.dart' as http;
@@ -55,7 +56,7 @@ class _HistoryState extends State<History> {
       builder: (BuildContext context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           if (snapshot.hasData) {
-            return CustomListView(data: snapshot.data);
+            return ServiceHistory(data: snapshot.data);
           } else {
             return Container(
               height: MediaQuery.of(context).size.height * 0.35,

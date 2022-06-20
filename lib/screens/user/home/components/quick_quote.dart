@@ -111,10 +111,12 @@ class _QuickQouteState extends State<QuickQoute> with TickerProviderStateMixin {
 
     String ?link = "${getCloudUrl()}/api/UPS/quickquote";
     var url = Uri.parse(link);
+    String ? token= await getToken();
     var response = await http.post(
       url,
       headers: {
         "Content-Type": "application/json",
+        "Authorization": "Bearer $token",
       },
       body: jsonEncode(
         {
@@ -160,7 +162,7 @@ class _QuickQouteState extends State<QuickQoute> with TickerProviderStateMixin {
   double? widthSizedBox = MySize.size5;
   double? heightSizedBox = MySize.size5;
   bool dutySwitch = false;
-  String? _selectedCourierService;
+  String? _selectedCourierService="UPS";
 
   ShippingModel from = new ShippingModel(
         city: "1",

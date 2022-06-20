@@ -112,7 +112,7 @@ class _GetReceiptState extends State<GetReceipt> {
   placeOrder(id) async {
     String? token = await getToken();
     String ?link =
-        "${getCloudUrl()}/products/placeorder?id=$id";
+        "${getCloudUrl()}/api/products/placeorder?id=$id";
     var url = Uri.parse(link);
     var response = await http.post(
       url,
@@ -161,7 +161,7 @@ class _GetReceiptState extends State<GetReceipt> {
         "shippingToPostalCode": widget.receiptData['shipToPostalCode'],
         "shippingToState": widget.receiptData['shipToStateCode'],
         "weight": widget.receiptData['packageWeight'],
-        "packageType": widget.receiptData['packageType'],
+        "packageType": "Test",
         "fromAddress": widget.receiptData['shipperAddress'],
         "toAddress": widget.receiptData['shipToAddress'],
         "upsServiceCharge": double.parse(widget.receiptData['totalAmount']),

@@ -134,7 +134,7 @@ class _QuickQouteState extends State<QuickQoute> with TickerProviderStateMixin {
   double? widthSizedBox = MySize.size5;
   double? heightSizedBox = MySize.size5;
   bool dutySwitch = false;
-  String? _selectedCourierService;
+  String? _selectedCourierService="UPS";
 
   ShippingModel from = new ShippingModel(
         city: "1",
@@ -589,10 +589,10 @@ class _QuickQouteState extends State<QuickQoute> with TickerProviderStateMixin {
       "name": "UPS",
       "icon": "assets/icons/logo_ups.svg",
     },
-    {
-      "name": "FedEx",
-      "icon": "assets/icons/logo_fedex.svg",
-    },
+    // {
+    //   "name": "FedEx",
+    //   "icon": "assets/icons/logo_fedex.svg",
+    // },
   ];
 
   String dropdownValue = 'One';

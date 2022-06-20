@@ -29,9 +29,144 @@ class _AddressState extends State<Address> with TickerProviderStateMixin {
     "Add My Address",
   ];
   AnimationController? _controller;
-
+bool ?isSwitched;
   late Future futureAddres;
   late ThemeData themeData;
+   TextEditingController addressController = TextEditingController(),
+      cityController = TextEditingController(),
+      emailController = TextEditingController(),
+      lastNameController = TextEditingController(),
+      organizationController = TextEditingController(),
+      phoneNumberController = TextEditingController(),
+      placeController = TextEditingController(),
+      userIdController=TextEditingController(),
+      zipCodeController=TextEditingController(),
+      stateController = TextEditingController();
+      editList( phoneNumber,
+    email,
+    org,
+    city,
+    address,
+    state,
+    zipCode,
+    lastname,
+    residential,
+    place,
+    id )async {
+        String? token = await getToken();
+        String? name= await getUserName();
+
+    String ?link = "${getCloudUrl()}/api/AddressBook/Edit";
+    // "${getCloudUrl()}​/api​/ShipmentOrder​/getfedexorderlist";
+
+    var url = Uri.parse(link);
+    var response;
+     isSwitched==true? response = await http.post(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $token",
+      },
+      body: jsonEncode(
+        {
+          
+"id": id,
+  "organization":organizationController.text,
+  "email": emailController.text,
+  "firstName": "",
+  "lastName": lastNameController.text,
+  "address": addressController.text,
+  "place": placeController.text,
+  "city": cityController.text,
+  "state": stateController.text,
+  "zipCode": zipCodeController.text,
+  "phoneNumber": phoneNumberController.text,
+  "isItResidential": true,
+  "visible": true,
+  "isActive": true,
+  "userId": name.toString(),
+
+       
+        },
+      ),
+    ):response = await http.post(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $token",
+      },
+      body: jsonEncode(
+        {
+          
+"id": id,
+  "organization":organizationController.text,
+  "email": emailController.text,
+  "firstName": "",
+  "lastName": lastNameController.text,
+  "address": addressController.text,
+  "place": placeController.text,
+  "city": cityController.text,
+  "state": stateController.text,
+  "zipCode": zipCodeController.text,
+  "phoneNumber": phoneNumberController.text,
+  "isItResidential": false,
+  "visible": true,
+  "isActive": true,
+  "userId": name.toString(),
+
+       
+        },
+      ),
+    );
+    print(response.statusCode);
+    print(response.body);
+    if (response.statusCode == 200) {
+       futureAddres=getAddresses();
+     setState(() {
+       
+     });
+      // var data = json.decode(response.body);
+      // return data;
+    } else {
+    
+      print("Exception");
+      throw Error;
+    }
+      }
+
+      deleteAddress(id) async{
+        try {
+      String? token = await getToken();
+
+      String ?link = "${getCloudUrl()}/api/AddressBook/Delete/$id";
+      var url = Uri.parse(link);
+      var response = await http.post(
+        url,
+        headers: {
+          "Authorization": "Bearer $token",
+        },
+      );
+      print(response.statusCode);
+      print(response.body);
+      if (response.statusCode == 200) {
+        futureAddres=getAddresses();
+        setState(() {
+          
+        });
+      } else {
+        print("Exception");
+        throw Error;
+      }
+    } on TimeoutException catch (e) {
+      print('Timeout Error: $e');
+    } on SocketException catch (e) {
+      internet = false;
+      print('Socket Error: $e');
+      setState(() {});
+    } on Error catch (e) {
+      print('General Error: $e');
+    }
+      }
   getAddresses() async {
     try {
       String? token = await getToken();
@@ -272,7 +407,64 @@ class _AddressState extends State<Address> with TickerProviderStateMixin {
                                                           ),
                                                         ),
                                                       ],
+                                                 
                                                     ),
+                                                    
+                                                 Row(
+                                                   
+                                                   children: [
+                                                     
+                                                     ElevatedButton(
+                                                         style: ButtonStyle(
+                                                foregroundColor:
+                                                        MaterialStateProperty.all<
+                                                            Color>(
+                                                      Colors.black,
+                                                ),
+                                                backgroundColor:
+                                                        MaterialStateProperty.all<
+                                                            Color>(
+                                                      Colors.amber.shade400,
+                                                ),
+                                              ),
+                                                       onPressed: (){
+                                                       _editBottomSheet(context,
+                                                        (snapshot.data as List)[index]["phoneNumber"].toString(),
+                                                        (snapshot.data as List)[index]["email"].toString(),
+                                                        (snapshot.data as List)[index]["organization"].toString(),
+                                                        (snapshot.data as List)[index]["city"].toString(),
+                                                        (snapshot.data as List)[index]["address"].toString(),
+                                                        (snapshot.data as List)[index]["state"].toString(),
+                                                        (snapshot.data as List)[index]["zipCode"].toString(),
+                                                        (snapshot.data as List)[index]["lastName"].toString(),
+                                                        (snapshot.data as List)[index]["isItResidential"],
+                                                        (snapshot.data as List)[index]["place"].toString(),
+                                                        (snapshot.data as List)[index]["id"],
+                                                                
+
+                                                       );
+
+                                                     }, child: Text("Edit")),
+                                                  SizedBox(width: MySize.size10,),
+                                                  ElevatedButton(
+                                                         style: ButtonStyle(
+                                                foregroundColor:
+                                                        MaterialStateProperty.all<
+                                                            Color>(
+                                                      Colors.black,
+                                                ),
+                                                backgroundColor:
+                                                        MaterialStateProperty.all<
+                                                            Color>(
+                                                      Colors.red,
+                                                ),
+                                              ),
+                                                       onPressed: (){
+                    deleteAddress((snapshot.data as List)[index]["id"]);
+
+                                                     }, child: Text("Delete")),
+                                                   ],
+                                                 )
                                                   ],
                                                 ),
                                               ),
@@ -288,10 +480,12 @@ class _AddressState extends State<Address> with TickerProviderStateMixin {
                           ),
                         );
                       } else {
-                        return Container(
-                          height: MediaQuery.of(context).size.height * 0.35,
-                          child: Image.asset(
-                            "assets/images/no_data_found.jpg",
+                        return Center(
+                          child: Container(
+                            height: MediaQuery.of(context).size.height * 0.35,
+                            child: Image.asset(
+                              "assets/images/no_data_found.jpg",
+                            ),
                           ),
                         );
                       }
@@ -435,6 +629,197 @@ class _AddressState extends State<Address> with TickerProviderStateMixin {
       //     }));
       //   },
       // ),
+    );
+  }
+
+ void _editBottomSheet(
+    context,
+    phoneNumber,
+    email,
+    org,
+    city,
+    address,
+    state,
+    zipCode,
+    lastname,
+    residential, 
+    place,
+    id
+   
+  ) {
+    phoneNumberController.text=phoneNumber;
+    emailController.text=email;
+    organizationController.text=org;
+    cityController.text=city;
+    addressController.text=address;
+    stateController.text=state;
+    zipCodeController.text=zipCode;
+    placeController.text=place;
+    lastNameController.text=lastname;
+    if(residential)
+    {
+    isSwitched=true;
+    }
+    else{
+      isSwitched=false;
+    } 
+    showModalBottomSheet(
+
+        context: context,
+        isScrollControlled: true,
+        builder: (BuildContext buildContext) {
+          return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState /*You can rename this!*/) {
+          
+       return   Scaffold(
+
+         body: Container(
+           margin: EdgeInsets.only(top: 20),
+           height: MediaQuery.of(context).size.height,
+           decoration: BoxDecoration(
+               color: themeData.backgroundColor,
+               borderRadius: BorderRadius.only(
+       
+                   topLeft: Radius.circular(16),
+                   topRight: Radius.circular(16))),
+           child: Padding(
+             padding: EdgeInsets.only(
+               top: 10,
+               left: 24,
+               right: 24,
+               // bottom: 300,
+             ),
+             child: 
+             SingleChildScrollView(
+               child: Column(
+                 children: [
+                   Row(
+                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                     children: [
+                       Text(
+                         "Edit Address",
+                         style: TextStyle(
+                             fontWeight: FontWeight.bold, fontSize: 20),
+                       ),
+                       IconButton(
+                         onPressed: () {
+                        
+             
+                           Navigator.pop(context);
+                         },
+                         icon: Icon(
+                           Icons.close,
+                         ),
+                       )
+                     ],
+                   ),
+                   Divider(
+                     height: 20,
+                     thickness: 1,
+                     // indent: 10,
+                     // endIndent: 10,
+                   ),
+                   Column(
+                     children: [
+                       customTextField(
+                           addressController, "", "Address", TextInputType.text),
+                       customTextField(cityController, "Inches", "city",
+                           TextInputType.text),
+                       customTextField(emailController, "Inches", "email",
+                           TextInputType.emailAddress),
+                       customTextField(lastNameController, "Inches", "lastName",
+                           TextInputType.text),
+                       customTextField(organizationController, "Inches", "Organization",
+                           TextInputType.text),
+                       customTextField(phoneNumberController, "Inches", "PhoneNumber",
+                           TextInputType.number),
+                            customTextField(placeController, "Inches", "Place",
+                           TextInputType.text),
+                            customTextField(stateController, "Inches", "State",
+                           TextInputType.text),
+             
+                            customTextField(zipCodeController, "Inches", "Zip Code",
+                           TextInputType.number),
+                           Row(
+                             mainAxisAlignment: MainAxisAlignment.end,
+                             children: [
+                               Text("Is it Residential?"),
+                               Switch(
+                    value: isSwitched!,
+                    onChanged: (value) {
+                      setState(() {
+               isSwitched = value;
+               print(isSwitched);
+                      });
+                    },
+                    activeTrackColor: Colors.green,
+                    activeColor: Colors.green,
+                       ),
+                             ],
+                           ),
+                     
+             
+                       Row(
+                         mainAxisAlignment: MainAxisAlignment.center,
+                         children: [
+                           Container(
+                               // width: MediaQuery.of(context).size.width,
+                               child: ElevatedButton(
+                             onPressed: () {
+                                editList(
+                           phoneNumber,email,org,city,address,state,zipCode,lastname,residential, place,id 
+                         );
+                               Navigator.pop(context);
+                             },
+                             child: Text("Save Changes"),
+                           )),
+                         ],
+                       ),
+                     ],
+                   )
+                 ],
+               ),
+             ),
+           ),
+         ),
+       );
+        });
+  });
+  }
+
+ Widget customTextField(
+    controller,
+    hintText,
+    labelText,
+    keyboard,
+  ) {
+    return Column(
+      children: [
+        TextFormField(
+          controller: controller,
+          decoration: InputDecoration(
+            contentPadding: EdgeInsets.symmetric(horizontal: 10),
+            fillColor: themeData.colorScheme.background,
+            hintStyle: TextStyle(
+              color: themeData.colorScheme.onBackground,
+            ),
+            filled: true,
+            hintText: hintText,
+            labelText: labelText,
+
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            enabledBorder: InputBorder.none,
+            focusedBorder: InputBorder.none,
+            // prefixIcon: Icon(Icons.person),
+          ),
+          keyboardType: keyboard,
+        ),
+        SizedBox(
+          height: 7,
+        )
+      ],
     );
   }
 }

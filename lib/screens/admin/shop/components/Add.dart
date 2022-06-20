@@ -30,7 +30,7 @@ class _AddState extends State<Add> {
     String? token = await getToken();
 
     var headers = {'Authorization': "Bearer $token"};
-    var request = http.MultipartRequest('POST',
+    var request = http.MultipartRequest('post',
         Uri.parse('${getCloudUrl()}/api/products'));
     request.fields.addAll({
       'Name': nameController.text,
@@ -62,46 +62,44 @@ class _AddState extends State<Add> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.only(
-              left: MySize.size20,
-              right: MySize.size20,
-              top: MySize.size30,
-              bottom: MySize.size20),
-          child: Column(
-            children: [
-              imageProfile(),
-              Padding(
-                padding:
-                    EdgeInsets.only(top: MySize.size10, bottom: MySize.size10),
-                child: customTextField(nameController, "", "Name"),
-              ),
-              Padding(
-                padding: EdgeInsets.only(bottom: MySize.size10),
-                child: customTextField(detailController, "", "Detail"),
-              ),
-              Padding(
-                padding: EdgeInsets.only(bottom: MySize.size10),
-                child: customTextField(priceController, "", "Price"),
-              ),
-              Padding(
-                padding: EdgeInsets.only(bottom: MySize.size10),
-                child: customTextField(colorController, "", "Color"),
-              ),
-              Padding(
-                padding: EdgeInsets.only(bottom: MySize.size10),
-                child: customTextField(stockController, "", "Stock"),
-              ),
-              ElevatedButton(
-                //style: style,
-                onPressed: () {
-                  postProduct();
-                },
-                child: const Text('Save Changes'),
-              ),
-            ],
-          ),
+      body: Padding(
+        padding: EdgeInsets.only(
+            left: MySize.size20,
+            right: MySize.size20,
+            top: MySize.size30,
+            bottom: MySize.size20),
+        child: Column(
+          children: [
+            imageProfile(),
+            Padding(
+              padding:
+                  EdgeInsets.only(top: MySize.size10, bottom: MySize.size10),
+              child: customTextField(nameController, "", "Name"),
+            ),
+            Padding(
+              padding: EdgeInsets.only(bottom: MySize.size10),
+              child: customTextField(detailController, "", "Detail"),
+            ),
+            Padding(
+              padding: EdgeInsets.only(bottom: MySize.size10),
+              child: customTextField(priceController, "", "Price"),
+            ),
+            Padding(
+              padding: EdgeInsets.only(bottom: MySize.size10),
+              child: customTextField(colorController, "", "Color"),
+            ),
+            Padding(
+              padding: EdgeInsets.only(bottom: MySize.size10),
+              child: customTextField(stockController, "", "Stock"),
+            ),
+            ElevatedButton(
+              //style: style,
+              onPressed: () {
+                postProduct();
+              },
+              child: const Text('Save Changes'),
+            ),
+          ],
         ),
       ),
     );
@@ -133,7 +131,34 @@ class _AddState extends State<Add> {
                         ),
                       ),
                     )
-                  : Image.memory(base64Decode(base64Image!))),
+                  : Stack(
+                   // mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                       Container(
+                        width:MySize.size30*5.5,
+                        height: MySize.size30*5.5,
+                        child: Image.memory(base64Decode(base64Image!))),
+                      Positioned(
+                      bottom: MySize.size14,
+                      right: MySize.size44,
+                      child: InkWell(
+                        onTap: () {
+                          showModalBottomSheet(
+                            context: context,
+                            builder: ((builder) => bottomSheet()),
+                          );
+                        },
+                        child: Icon(
+                          Icons.camera_alt,
+                          color: Colors.green,
+                          size: 28.0,
+
+                        ),
+                      ),
+                    ),
+                     
+                    ],
+                  )),
         ]),
       ),
     );

@@ -1,8 +1,10 @@
 import 'dart:core';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:aquatic_xpress_shipping/screens/user/shipping_payment/Services.dart';
 import 'package:aquatic_xpress_shipping/screens/user/shipping_payment/receipt.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_plus/webview_flutter_plus.dart';
 
 class Payment extends StatefulWidget {
   final Function onFinish;
@@ -46,6 +48,7 @@ class PaymentState extends State<Payment> {
   @override
   void initState() {
     super.initState();
+     if(Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
 
     Future.delayed(Duration.zero, () async {
       try {
@@ -83,6 +86,7 @@ class PaymentState extends State<Payment> {
 
     if (checkoutUrl != null) {
       return Scaffold(
+        resizeToAvoidBottomInset: true,
         appBar: AppBar(
           backgroundColor: Theme.of(context).backgroundColor,
           leading: GestureDetector(
@@ -90,7 +94,7 @@ class PaymentState extends State<Payment> {
             onTap: () => Navigator.pop(context),
           ),
         ),
-        body: WebView(
+        body: WebViewPlus(
           initialUrl: checkoutUrl,
           javascriptMode: JavascriptMode.unrestricted,
           navigationDelegate: (NavigationRequest request) {

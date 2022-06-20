@@ -39,7 +39,10 @@ class _BoxPreferencesState extends State<BoxPreferences> {
     print(response.statusCode);
     print(response.body);
     if (response.statusCode == 200) {
+      jsonData.clear();
        data1 = json.decode(response.body);
+        jsonData.addAll(data1);
+      searchJson.addAll(data1);
       return data1;
     } else {
       print("Exception");
@@ -50,25 +53,25 @@ class _BoxPreferencesState extends State<BoxPreferences> {
   deleteBox(id) async {
     String? token = await getToken();
 
-    String ?link = "${getCloudUrl()}/api/BoxPref/" +
-        id.toString();
+    String ?link = "${getCloudUrl()}/api/BoxPref/Delete/$id";
     // "${getCloudUrl()}​/api​/ShipmentOrder​/getfedexorderlist";
 
     var url = Uri.parse(link);
-    var response = await http.delete(
+    var response = await http.post(
       url,
       headers: {
         "Authorization": "Bearer $token",
       },
-      body: jsonEncode(
-        {
-          'id': id.toString(),
-        },
-      ),
+      // body: jsonEncode(
+      //   {
+      //     'id': id.toString(),
+      //   },
+      // ),
     );
     print(response.statusCode);
     print(response.body);
     if (response.statusCode == 200) {
+      futureUserList=getBoxes();
       setState(() {});
     } else {
       print("Exception");
@@ -81,7 +84,7 @@ class _BoxPreferencesState extends State<BoxPreferences> {
     length,
     width,
     height,
-    id,
+     id,
   ) async {
     String? token = await getToken();
 
@@ -101,13 +104,14 @@ class _BoxPreferencesState extends State<BoxPreferences> {
           "length": lengthController.text,
           "width": widthController.text,
           "height": heightController.text,
-          "userId":id.toString()
+          "userId":id.toString(),
         },
       ),
     );
     print(response.statusCode);
     print(response.body);
     if (response.statusCode == 200) {
+      futureUserList = getBoxes();
       // var data = json.decode(response.body);
       // return data;
     } else {
@@ -122,15 +126,16 @@ class _BoxPreferencesState extends State<BoxPreferences> {
     length,
     width,
     height,
-    code,
+    // code,
+    userId
   ) async {
     String? token = await getToken();
 
-    String ?link = "${getCloudUrl()}/api/BoxPref";
+    String ?link = "${getCloudUrl()}/api/BoxPref/EditBox";
     // "${getCloudUrl()}​/api​/ShipmentOrder​/getfedexorderlist";
 
     var url = Uri.parse(link);
-    var response = await http.put(
+    var response = await http.post(
       url,
       headers: {
         "Content-Type": "application/json",
@@ -143,13 +148,19 @@ class _BoxPreferencesState extends State<BoxPreferences> {
           "length": length,
           "width": width,
           "height": height,
-          "code": code,
+          // "code": code,
+          "userId":id.toString(),
         },
       ),
     );
     print(response.statusCode);
     print(response.body);
     if (response.statusCode == 200) {
+      jsonData.clear();
+      futureUserList=getBoxes();
+      setState(() {
+        
+      });
       // var data = json.decode(response.body);
       // return data;
     } else {
@@ -158,11 +169,78 @@ class _BoxPreferencesState extends State<BoxPreferences> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    futureUserList = getBoxes();
+
+List searchJson=[];
+List jsonData=[];
+String ?_chosenValue="ASC";
+String? chosenFieldValue;
+ TextEditingController txtQuery = new TextEditingController();
+  
+  
+  void search(String query) {
+  if (query.isEmpty) {
+    jsonData = searchJson;
+    setState(() {});
+    return;
   }
+
+  query = query.toLowerCase();
+  print(query);
+  List result = [];
+  jsonData.forEach((p) {
+    var name =p["name"].toString().toLowerCase();
+    if (name.contains(query)) {
+      result.add(p);
+    }
+     name =p["length"].toString().toLowerCase();
+    if (name.contains(query)) {
+      result.add(p);
+    }
+   name =p["height"].toString().toLowerCase();
+    if (name.contains(query)) {
+      result.add(p);
+    }
+   name =p["width"].toString().toLowerCase();
+    if (name.contains(query)) {
+      result.add(p);
+    }
+  
+  });
+
+  var data = result;
+ List orders=[];
+orders.addAll(data);
+var uniqueData = orders.map((o) => o).toSet();
+ result.clear();
+result.addAll(uniqueData);
+
+
+  jsonData = result;
+  setState(() {});
+}
+ 
+ @override
+  void initState() { 
+    super.initState();
+    jsonData.clear();
+    try {
+   futureUserList = getBoxes();
+            } catch (e) {
+              print(e);
+            }
+            
+  }
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    jsonData;
+  }
+
+
+
+
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -174,166 +252,483 @@ class _BoxPreferencesState extends State<BoxPreferences> {
         title: Text("Box Preferences"),
         centerTitle: true,
       ),
-      body: FutureBuilder(
-        future: futureUserList,
-        builder: (BuildContext context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.hasData) {
-              return Container(
-                // height: MediaQuery.of(context).size.height * 0.8,
-                padding: EdgeInsets.only(bottom: MySize.size40),
-                child: ListView.builder(
-                  itemCount: (snapshot.data as List).length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Column(
-                      children: [
-                        Container(
-                          margin: EdgeInsets.symmetric(
-                            horizontal: MySize.size16,
-                            vertical: MySize.size4,
-                          ),
-                          child: Card(
-                            elevation: 15,
-                            clipBehavior: Clip.antiAlias,
-                            child: ListTileTheme(
-                              // dense: true,
+      body: Column(
+        children: [
+          Padding(
+          padding:  EdgeInsets.only(left: MySize.size10, top:MySize.size10, right:MySize.size10),
+          child:
+          TextFormField(
+  controller: txtQuery,
+  onChanged: search,
+  decoration: InputDecoration(
+  filled: true,
+  fillColor: themeData.backgroundColor,
+      hintText: "Search",
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(4.0)),
+      focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: themeData.primaryColor),
+      borderRadius: BorderRadius.circular(15.0),
+      ),
+      prefixIcon: Icon(Icons.search),
+      suffixIcon: IconButton(
+        icon: Icon(Icons.clear),
+        onPressed: () {
+          txtQuery.text = '';
+          search(txtQuery.text);
+        },
+      ),
+  ),
+),
+    
+              ),
 
-                              contentPadding:
-                                  EdgeInsets.fromLTRB(MySize.size20, 0, 0, 0),
-                              child: ExpansionTile(
-                                trailing: SizedBox.shrink(),
-                                // trailing: Text(''),
-                                title: Text(
-                                  (snapshot.data as List)[index]["name"]
-                                      .toString(),
+        Padding(
+  padding:  EdgeInsets.only(left:MySize.size40),
+  child:   Row(
+  
+    children: [
+  
+          DropdownButton<String>(
+  
+      
+  
+          focusColor:Colors.white,
+  
+      
+  
+      dropdownColor:themeData.backgroundColor,
+  
+      
+  
+                  value: _chosenValue,
+  
+      
+  
+                  //elevation: 5,
+  
+      
+  
+                  style: TextStyle(color: Colors.black),
+  
+      
+  
+      
+  
+      
+  
+                  items: <String>[
+  
+      
+  
+                    'ASC',
+  
+      
+  
+                    'DES',
+  
+      
+  
+                  ].map<DropdownMenuItem<String>>((String value) {
+  
+      
+  
+                    return DropdownMenuItem<String>(
+  
+      
+  
+                      value: value,
+  
+      
+  
+                      child: Text(value),
+  
+      
+  
+                    );
+  
+      
+  
+                  }).toList(),
+  
+      
+  
+                  hint: Text(
+  
+      
+  
+                    "Sort",
+  
+      
+  
+                    style: TextStyle(
+  
+      
+  
+                        color: Colors.black,
+  
+      
+  
+                        fontSize: 16,
+  
+      
+  
+                        fontWeight: FontWeight.w600),
+  
+      
+  
+                  ),
+  
+      
+  
+                  onChanged: (String ?value) {
+  
+      
+  
+                    setState(() {
+  
+      
+  
+                      _chosenValue = value;
+  
+      
+  
+                    });
+  
+      
+  
+                  }),
+  
+  
+  
+                  Padding(
+                    padding: EdgeInsets.only(left:MySize.size20),
+                    child: DropdownButton<String>(
+  
+      focusColor:Colors.white,
+  
+  dropdownColor:themeData.backgroundColor,
+  
+              value: chosenFieldValue,
+  
+              //elevation: 5,
+  
+              style: TextStyle(color: Colors.black),
+  
+  
+  
+              items: <String>[
+  
+                'Name',
+                'Length',
+                'Height',
+                'Width',
+              ].map<DropdownMenuItem<String>>((String value) {
+  
+                return DropdownMenuItem<String>(
+  
+                    value: value,
+  
+                    child: Text(value),
+  
+                );
+  
+              }).toList(),
+  
+              hint: Text(
+  
+                "Choose field to Sort",
+  
+                style: TextStyle(
+  
+                      color: Colors.black,
+  
+                      fontSize: 16,
+  
+                      fontWeight: FontWeight.w600),
+  
+              ),
+  
+              onChanged: (String ?value) {
+  
+                setState(() {
+  
+                    chosenFieldValue = value;
+  
+                });
+  
+              }),
+                  ),
+  
+  
+
+               Padding(
+  padding:  EdgeInsets.only(left:MySize.size10),
+  child:   GestureDetector(
+    onTap: (){
+      if(_chosenValue=="ASC" )
+{
+  if(chosenFieldValue=="Name")
+  {
+jsonData.sort((a, b) => a["name"].compareTo(b["name"]));
+setState(() {
+  
+});
+  }
+  else if(chosenFieldValue=="Length")
+  {
+    jsonData.sort((a, b) => a["length"].compareTo(b["length"]));
+    setState(() {
+  
+});
+  }
+  else if(chosenFieldValue=="Height")
+  {
+    jsonData.sort((a, b) => a["height"].compareTo(b["height"]));
+    setState(() {
+  
+});}
+  else if(chosenFieldValue=="Width")
+  {
+jsonData.sort((a, b) => a["width"].compareTo(b["width"]));
+    setState(() {
+  
+});
+
+  }
+  
+  
+}
+else if(_chosenValue=="DES")
+{
+   if(chosenFieldValue=="Name")
+  {
+jsonData.sort((a, b) => b["name"].compareTo(a["name"]));
+setState(() {
+  
+});
+  }
+  else if(chosenFieldValue=="Height")
+  {
+    jsonData.sort((a, b) => b["height"].compareTo(a["height"]));
+    setState(() {
+  
+});
+  }
+  else if(chosenFieldValue=="Length")
+  {
+    jsonData.sort((a, b) => b["lenght"].compareTo(a["length"]));
+    setState(() {
+  
+});}
+  else if(chosenFieldValue=="Width")
+  {
+jsonData.sort((a, b) => b["width"].compareTo(a["width"]));
+    setState(() {
+  
+});
+
+  }
+ 
+}
+    },
+    child: Container(
+    
+                         width:MySize.size60,
+    
+                         height: MySize.size40,
+    
+       decoration: BoxDecoration(
+    
+        color: Colors.grey[400],
+    
+       borderRadius: BorderRadius.all(Radius.circular(4)
+    
+      
+    
+       )
+    
+       
+    
+     ),
+    
+     child: Center(child: Text("Sort"))
+    
+    ),
+  ),
+)  
+    
+    
+    
+    
+    ],
+  
+  ),
+),
+          
+
+          Expanded(
+            child: FutureBuilder(
+              future: futureUserList,
+              builder: (BuildContext context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  if (snapshot.hasData) {
+                    return Container(
+                      // height: MediaQuery.of(context).size.height * 0.8,
+                      padding: EdgeInsets.only(bottom: MySize.size40),
+                      child: ListView.builder(
+                        itemCount:jsonData.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Column(
+                            children: [
+                              Container(
+                                margin: EdgeInsets.symmetric(
+                                  horizontal: MySize.size16,
+                                  vertical: MySize.size4,
                                 ),
-                                subtitle: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Text("Length: "),
-                                        Text(
-                                          (snapshot.data as List)[index]
-                                                  ["length"]
-                                              .toString(),
-                                          style: AppTheme.getTextStyle(
-                                            themeData.textTheme.button,
-                                            fontWeight: 550,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        Text("Width: "),
-                                        Text(
-                                          (snapshot.data as List)[index]
-                                                  ["width"]
-                                              .toString(),
-                                          style: AppTheme.getTextStyle(
-                                            themeData.textTheme.button,
-                                            fontWeight: 550,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        Text("Height: "),
-                                        Text(
-                                          (snapshot.data as List)[index]
-                                                  ["height"]
-                                              .toString(),
-                                          style: AppTheme.getTextStyle(
-                                            themeData.textTheme.button,
-                                            fontWeight: 550,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                children: [
-                                  Container(
-                                    margin: EdgeInsets.fromLTRB(MySize.size10,
-                                        0, MySize.size36, MySize.size10),
-                                    child: Column(children: [
-                                      Wrap(
+                                child: Card(
+                                  elevation: 15,
+                                  clipBehavior: Clip.antiAlias,
+                                  child: ListTileTheme(
+                                    // dense: true,
+          
+                                    contentPadding:
+                                        EdgeInsets.fromLTRB(MySize.size20, 0, 0, 0),
+                                    child: ExpansionTile(
+                                      trailing: SizedBox.shrink(),
+                                      // trailing: Text(''),
+                                      title: Text(
+                                       jsonData[index]["name"]
+                                            .toString(),
+                                      ),
+                                      subtitle: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
-                                          ElevatedButton.icon(
-                                            style: ButtonStyle(
-                                              foregroundColor:
-                                                  MaterialStateProperty.all<
-                                                      Color>(
-                                                Colors.black,
+                                          Row(
+                                            children: [
+                                              Text("Length: "),
+                                              Text(
+                                               jsonData[index]
+                                                        ["length"]
+                                                    .toString(),
+                                                style: AppTheme.getTextStyle(
+                                                  themeData.textTheme.button,
+                                                  fontWeight: 550,
+                                                ),
                                               ),
-                                              backgroundColor:
-                                                  MaterialStateProperty.all<
-                                                      Color>(
-                                                Colors.amber.shade200,
-                                              ),
-                                            ),
-                                            onPressed: () {
-                                              _editBottomSheet(
-                                                context,
-                                                (snapshot.data as List)[index],
-                                              );
-                                            },
-                                            icon: Icon(Icons.edit),
-                                            label: Text("Edit"),
+                                            ],
                                           ),
-                                          SizedBox(width: 10),
-                                          ElevatedButton.icon(
-                                            style: ButtonStyle(
-                                              foregroundColor:
-                                                  MaterialStateProperty.all<
-                                                      Color>(
-                                                Colors.black,
+                                          Row(
+                                            children: [
+                                              Text("Width: "),
+                                              Text(
+                                               jsonData[index]
+                                                        ["width"]
+                                                    .toString(),
+                                                style: AppTheme.getTextStyle(
+                                                  themeData.textTheme.button,
+                                                  fontWeight: 550,
+                                                ),
                                               ),
-                                              backgroundColor:
-                                                  MaterialStateProperty.all<
-                                                      Color>(
-                                                Colors.redAccent.shade100,
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Text("Height: "),
+                                              Text(
+                                               jsonData[index]
+                                                        ["height"]
+                                                    .toString(),
+                                                style: AppTheme.getTextStyle(
+                                                  themeData.textTheme.button,
+                                                  fontWeight: 550,
+                                                ),
                                               ),
-                                            ),
-                                            onPressed: () {
-                                              deleteBox((snapshot.data
-                                                      as List)[index]["id"]
-                                                  .toString());
-                                            },
-                                            icon: Icon(Icons.delete),
-                                            label: Text("Delete"),
-                                          )
+                                            ],
+                                          ),
                                         ],
                                       ),
-                                    ]),
+                                      children: [
+                                        Container(
+                                          margin: EdgeInsets.fromLTRB(MySize.size10,
+                                              0, MySize.size36, MySize.size10),
+                                          child: Column(children: [
+                                            Wrap(
+                                              children: [
+                                                ElevatedButton.icon(
+                                                  style: ButtonStyle(
+                                                    foregroundColor:
+                                                        MaterialStateProperty.all<
+                                                            Color>(
+                                                      Colors.black,
+                                                    ),
+                                                    backgroundColor:
+                                                        MaterialStateProperty.all<
+                                                            Color>(
+                                                      Colors.amber.shade200,
+                                                    ),
+                                                  ),
+                                                  onPressed: () {
+                                                    _editBottomSheet(
+                                                      context,
+                                                     jsonData[index],
+                                                    );
+                                                  },
+                                                  icon: Icon(Icons.edit),
+                                                  label: Text("Edit"),
+                                                ),
+                                                SizedBox(width: 10),
+                                                ElevatedButton.icon(
+                                                  style: ButtonStyle(
+                                                    foregroundColor:
+                                                        MaterialStateProperty.all<
+                                                            Color>(
+                                                      Colors.black,
+                                                    ),
+                                                    backgroundColor:
+                                                        MaterialStateProperty.all<
+                                                            Color>(
+                                                      Colors.redAccent.shade100,
+                                                    ),
+                                                  ),
+                                                  onPressed: () {
+                                                    deleteBox((snapshot.data
+                                                            as List)[index]["id"]
+                                                        .toString());
+                                                  },
+                                                  icon: Icon(Icons.delete),
+                                                  label: Text("Delete"),
+                                                )
+                                              ],
+                                            ),
+                                          ]),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        )
-                      ],
+                                ),
+                              )
+                            ],
+                          );
+                        },
+                      ),
                     );
-                  },
-                ),
-              );
-            } else {
-              return Container(
-                height: MediaQuery.of(context).size.height * 0.35,
-                child: Center(
-                    child: Image.asset(
-                  "assets/images/no_data_found.jpg",
-                )),
-              );
-            }
-          } else {
-            return listViewWithoutLeadingPictureWithoutExpandedSkeleton(
-                context);
-          }
-        },
+                  } else {
+                    return Container(
+                      height: MediaQuery.of(context).size.height * 0.35,
+                      child: Center(
+                          child: Image.asset(
+                        "assets/images/no_data_found.jpg",
+                      )),
+                    );
+                  }
+                } else {
+                  return listViewWithoutLeadingPictureWithoutExpandedSkeleton(
+                      context);
+                }
+              },
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -422,8 +817,10 @@ class _BoxPreferencesState extends State<BoxPreferences> {
                                   lengthController.text,
                                   widthController.text,
                                   heightController.text,
-                                  box['code'],
+                                  // box['code'],
+                                  jsonData[0]["userId"].toString()
                                 );
+                                
                                 Navigator.pop(context);
                               },
                               child: Text("Save Changes"),
@@ -517,9 +914,11 @@ class _BoxPreferencesState extends State<BoxPreferences> {
                             lengthController.text,
                             widthController.text,
                             heightController.text,
-                            data1[1]["userId"].toString()
+                            data1[0]["userId"].toString()
                                                   
                           );
+                                getBoxes();
+
                                 Navigator.pop(context);
                               },
                               child: Text("Add Box"),

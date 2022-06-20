@@ -69,7 +69,7 @@ class _DealsState extends State<Deals> {
         "${getCloudUrl()}/api/Products/updateDeals";
 
     var url = Uri.parse(link);
-    var response = await http.put(url,
+    var response = await http.post(url,
         headers: {
           "Authorization": "Bearer $token",
           "Content-Type": "application/json"
@@ -104,10 +104,10 @@ class _DealsState extends State<Deals> {
   deleteData(id) async {
     String? token = await getToken();
     String ?link =
-        "${getCloudUrl()}/api/products/deleteDeal/" +
-            id.toString();
+        "${getCloudUrl()}/api/products/deleteDeal/$id";
+            // id.toString();
     var url = Uri.parse(link);
-    var response = await http.delete(
+    var response = await http.post(
       url,
       headers: {
         "Authorization": "Bearer $token",

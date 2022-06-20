@@ -20,7 +20,7 @@ class _ShippingFromToState extends State<ShippingFromTo> {
   late ThemeData themeData;
   TextEditingController fromController = new TextEditingController(),
       toController = new TextEditingController();
-  String? fromCountry, toCountry, fromCountryIcon, toCountryIcon;
+  String? fromCountry="United States"+ "-"+ "US", toCountry="United States"+ "-"+ "US", fromCountryIcon, toCountryIcon;
   var countriesList = [
     {
       "name": "United States",
@@ -109,8 +109,7 @@ class _ShippingFromToState extends State<ShippingFromTo> {
                               child: Row(
                                 children: [
                                   Container(
-                                    margin:
-                                        EdgeInsets.only(right: MySize.size5),
+                                    margin: EdgeInsets.only(right: MySize.size5),
                                     child: SvgPicture.asset(
                                       e["icon"].toString(),
                                       height: MySize.size20,

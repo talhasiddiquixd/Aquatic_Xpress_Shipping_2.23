@@ -72,7 +72,7 @@ class _EditState extends State<Edit> {
 
     var headers = {'Authorization': 'Bearer $token",'};
     var request = http.MultipartRequest(
-        'PUT',
+        'POST',
         Uri.parse('${getCloudUrl()}/api/products/' +
             widget.id.toString()));
     request.fields.addAll({

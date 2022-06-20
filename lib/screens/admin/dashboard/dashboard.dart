@@ -151,20 +151,20 @@ print(response.statusCode);
         TotalProfit("Nov", profitResults[0]["Value"][10].toDouble()),
         TotalProfit("Dec", profitResults[0]["Value"][11].toDouble()),
       ];
-      fedexData = [
-        TotalProfit("Jan", profitResults[1]["Value"][0].toDouble()),
-        TotalProfit("Feb", profitResults[1]["Value"][1].toDouble()),
-        TotalProfit("Mar", profitResults[1]["Value"][2].toDouble()),
-        TotalProfit("Apr", profitResults[1]["Value"][3].toDouble()),
-        TotalProfit("May", profitResults[1]["Value"][4].toDouble()),
-        TotalProfit("Jun", profitResults[1]["Value"][5].toDouble()),
-        TotalProfit("July", profitResults[1]["Value"][6].toDouble()),
-        TotalProfit("Aug", profitResults[1]["Value"][7].toDouble()),
-        TotalProfit("Sept", profitResults[1]["Value"][8].toDouble()),
-        TotalProfit("Oct", profitResults[1]["Value"][9].toDouble()),
-        TotalProfit("Nov", profitResults[1]["Value"][10].toDouble()),
-        TotalProfit("Dec", profitResults[1]["Value"][11].toDouble()),
-      ];
+      // fedexData = [
+      //   TotalProfit("Jan", profitResults[1]["Value"][0].toDouble()),
+      //   TotalProfit("Feb", profitResults[1]["Value"][1].toDouble()),
+      //   TotalProfit("Mar", profitResults[1]["Value"][2].toDouble()),
+      //   TotalProfit("Apr", profitResults[1]["Value"][3].toDouble()),
+      //   TotalProfit("May", profitResults[1]["Value"][4].toDouble()),
+      //   TotalProfit("Jun", profitResults[1]["Value"][5].toDouble()),
+      //   TotalProfit("July", profitResults[1]["Value"][6].toDouble()),
+      //   TotalProfit("Aug", profitResults[1]["Value"][7].toDouble()),
+      //   TotalProfit("Sept", profitResults[1]["Value"][8].toDouble()),
+      //   TotalProfit("Oct", profitResults[1]["Value"][9].toDouble()),
+      //   TotalProfit("Nov", profitResults[1]["Value"][10].toDouble()),
+      //   TotalProfit("Dec", profitResults[1]["Value"][11].toDouble()),
+      // ];
     }
   }
 
@@ -513,7 +513,7 @@ print(response.statusCode);
                                               1,
                                           child: SfCartesianChart(
                                               //title: ChartTitle(text: 'Yearly sales analysis'),
-                                              legend: Legend(isVisible: true),
+                                              legend: Legend(isVisible: true ,position: LegendPosition.bottom),
                                               tooltipBehavior: _tooltipBehavior,
                                               series: <LineSeries>[
                                                 LineSeries<SalesData, String>(
@@ -611,7 +611,8 @@ print(response.statusCode);
                                           child: SfCartesianChart(
 
                                               //title: ChartTitle(text: 'Yearly sales analysis'),
-                                              legend: Legend(isVisible: true),
+                                              legend: Legend(isVisible: true,position: LegendPosition.bottom),
+                                              
                                               tooltipBehavior:
                                                   _tooltipBehavior1,
                                               series: <
@@ -637,27 +638,27 @@ print(response.statusCode);
                                                   // splineType: SplineType.cardinal,
                                                   // cardinalSplineTension: 0.9))
                                                 ),
-                                                LineSeries<TotalProfit, String>(
-                                                  name: 'Fedex Profit',
-                                                  dataSource: fedexData,
-                                                  xValueMapper:
-                                                      (TotalProfit year, _) =>
-                                                          year.year,
-                                                  yValueMapper:
-                                                      (TotalProfit sales, _) =>
-                                                          sales.profit,
-                                                  dataLabelSettings:
-                                                      DataLabelSettings(
-                                                          isVisible: true),
-                                                  enableTooltip: true,
-                                                  color: Colors.blue,
-                                                  width: 2,
-                                                  opacity: 1,
+                                                // LineSeries<TotalProfit, String>(
+                                                //   name: 'Fedex Profit',
+                                                //   dataSource: fedexData,
+                                                //   xValueMapper:
+                                                //       (TotalProfit year, _) =>
+                                                //           year.year,
+                                                //   yValueMapper:
+                                                //       (TotalProfit sales, _) =>
+                                                //           sales.profit,
+                                                //   dataLabelSettings:
+                                                //       DataLabelSettings(
+                                                //           isVisible: true),
+                                                //   enableTooltip: true,
+                                                //   color: Colors.blue,
+                                                //   width: 2,
+                                                //   opacity: 1,
 
-                                                  // dashArray: <double>[5,5],
-                                                  // splineType: SplineType.cardinal,
-                                                  // cardinalSplineTension: 0.9))
-                                                ),
+                                                //   // dashArray: <double>[5,5],
+                                                //   // splineType: SplineType.cardinal,
+                                                //   // cardinalSplineTension: 0.9))
+                                                // ),
                                                 LineSeries<TotalProfit, String>(
                                                   name: 'UPS Profit',
                                                   dataSource: upsData,

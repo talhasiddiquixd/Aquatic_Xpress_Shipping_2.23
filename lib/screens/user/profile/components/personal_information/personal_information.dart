@@ -92,7 +92,7 @@ class _PersonalInformationState extends State<PersonalInformation> {
     var url = Uri.parse(link);
     String? token = await getToken();
 
-    var response = await http.put(
+    var response = await http.post(
       url,
       headers: {
         "Content-Type": "application/json",

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'dart:ui';
 
+import 'package:aquatic_xpress_shipping/screens/admin/shop/components/Add.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:aquatic_xpress_shipping/AppTheme.dart';
@@ -207,31 +208,31 @@ class _ShopState extends State<Shop> with SingleTickerProviderStateMixin {
           )
         ],
       ),
-      // floatingActionButton: _currentIndex == 1
-      //     ? Padding(
-      //         padding: EdgeInsets.only(
-      //           bottom: MySize.size20,
-      //           left: MySize.size60,
-      //         ),
-      //         child: FloatingActionButton(
-      //           backgroundColor: Colors.green,
-      //           child: Icon(Icons.add),
-      //           onPressed: () {
-      //             Navigator.push(
-      //                 context, MaterialPageRoute(builder: (context) => Add()));
-      //             // _shippingBottomSheet(
-      //             //   context,
-      //             //   false,
-      //             //   "",
-      //             //   "",
-      //             //   "",
-      //             //   "",
-      //             //   "",
-      //             // );
-      //           },
-      //         ),
-      //       )
-      //     : Container(),
+      floatingActionButton: _currentIndex == 1
+          ? Padding(
+              padding: EdgeInsets.only(
+                bottom: MySize.size20,
+                left: MySize.size60,
+              ),
+              child: FloatingActionButton(
+                backgroundColor: Colors.green,
+                child: Icon(Icons.add),
+                onPressed: () {
+                  Navigator.push(
+                      context, MaterialPageRoute(builder: (context) => Add()));
+                  // _shippingBottomSheet(
+                  //   context,
+                  //   false,
+                  //   "",
+                  //   "",
+                  //   "",
+                  //   "",
+                  //   "",
+                  // );
+                },
+              ),
+            )
+          : Container(),
     );
   }
 

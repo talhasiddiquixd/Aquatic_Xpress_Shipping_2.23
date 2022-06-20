@@ -29,8 +29,8 @@ class _CustomListViewState extends State<CustomListView> {
       'Content-Type': 'application/x-www-form-urlencoded'
     };
     var request = http.Request(
-        'DELETE',
-        Uri.parse('${getCloudUrl()}/api/Products/' +
+        'POST',
+        Uri.parse('${getCloudUrl()}/api/Products/Delete/' +
             id.toString()));
     request.body = '''''';
     request.headers.addAll(headers);

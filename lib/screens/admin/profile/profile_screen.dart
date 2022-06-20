@@ -83,7 +83,7 @@ class _ProfileState extends State<Profile> {
     String ?link =
         "${getCloudUrl()}/api/Auth/changepassword";
     var url = Uri.parse(link);
-    var response = await http.put(url,
+    var response = await http.post(url,
         headers: {
           "Authorization": "Bearer $token",
           "Content-Type": "application/json"

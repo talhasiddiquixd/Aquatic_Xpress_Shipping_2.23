@@ -5,14 +5,14 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../AppTheme.dart';
 import '../../../size_config.dart';
 
-class CustomListView extends StatefulWidget {
-  const CustomListView({Key? key, this.data}) : super(key: key);
+class ServiceHistory extends StatefulWidget {
+  const ServiceHistory({Key? key, this.data}) : super(key: key);
   final data;
   @override
-  _CustomListViewState createState() => _CustomListViewState();
+  _ServiceHistoryState createState() => _ServiceHistoryState();
 }
 
-class _CustomListViewState extends State<CustomListView> {
+class _ServiceHistoryState extends State<ServiceHistory> {
 
 List searchJson=[];
 List jsonData=[];
@@ -30,7 +30,14 @@ String? chosenFieldValue;
 
   query = query.toLowerCase();
   print(query);
-  List result = [];
+  List result=[];
+
+ // ignore: unnecessary_statements
+//  result!= jsonData.where((item) => item["userName"].
+// contains(searchJson) || item["orderDate"].toLowerCase().contains(searchJson) || item["additionalCharges"].contains(searchJson) || item["previousAmount"].contains(searchJson) || item["shipmentTrackingNumber"].contains(searchJson));
+// var data= jsonData.where((item) => item.userName.
+// contains(searchJson) || item.orderDate.contains(searchJson) || item.additionalCharges.contains(searchJson) || item.previousAmount.contains(searchJson) || item.shipmentTrackingNumber.contains(searchJson));
+
   jsonData.forEach((p) {
     var name =p["userName"].toString().toLowerCase();
     if (name.contains(query)) {
@@ -56,16 +63,16 @@ String? chosenFieldValue;
   
   
   });
-
-  var data = result;
+var data = result;
  List orders=[];
 orders.addAll(data);
 var uniqueData = orders.map((o) => o).toSet();
  result.clear();
 result.addAll(uniqueData);
 
-
-  jsonData = result;
+  
+  // jsonData.clear();
+  jsonData=result;
   setState(() {});
 }
   openURl(id) async {
@@ -89,12 +96,6 @@ result.addAll(uniqueData);
 
       jsonData.addAll(widget.data);
       searchJson.addAll(widget.data);
-            // for(int i=0; i<widget.data!.length; i++)
-            // { 
-            // jsonData.add(widget.data[i]);
-            // searchJson.add(widget.data[i]);
-            // print(jsonData);
-            // } 
               
             } catch (e) {
               print(e);
@@ -106,12 +107,12 @@ result.addAll(uniqueData);
     // TODO: implement dispose
     super.dispose();
     jsonData;
+    searchJson;
   }
   @override
   Widget build(BuildContext context) {
     themeData = Theme.of(context);
-    return
-     Column(
+    return Column(
       
       children: [
         Padding(
@@ -441,6 +442,225 @@ setState(() {
   ),
 ),
           
+   
+// DropdownButton<String>(
+//     focusColor:Colors.white,
+// dropdownColor:themeData.backgroundColor,
+//             value: _chosenValue,
+//             //elevation: 5,
+//             style: TextStyle(color: Colors.black),
+
+//             items: <String>[
+//               'ASC',
+//               'DES',
+//             ].map<DropdownMenuItem<String>>((String value) {
+//               return DropdownMenuItem<String>(
+//                 value: value,
+//                 child: Text(value),
+//               );
+//             }).toList(),
+//             hint: Text(
+//               "Please choose a Sorting Format",
+//               style: TextStyle(
+//                   color: Colors.black,
+//                   fontSize: 16,
+//                   fontWeight: FontWeight.w600),
+//             ),
+//             onChanged: (String ?value) {
+//               setState(() {
+//                 _chosenValue = value;
+//               });
+//             }),
+
+//            Padding(
+//             padding: const EdgeInsets.all(8.0),
+//             child: Row(
+//               mainAxisAlignment: MainAxisAlignment.start,
+//               children: [
+//                 // Icon(Icons.sort_by_alpha_sharp),
+//                 SizedBox(),
+//                 GestureDetector(
+//                             onTap: (){
+//             if(_chosenValue=="ASC")
+//             {
+// jsonData.sort((a, b) => a["userName"].compareTo(b["userName"]));
+//             }
+//             else if(_chosenValue=="DES")
+//             {
+// jsonData.sort((a, b) => b["userName"].compareTo(a["userName"]));
+//             }
+           
+
+// // jsonData;
+// setState(() {
+  
+// });
+//           },
+//                   child: Container(
+//                      width:MySize.size60,
+//                      height: MySize.size40,
+//    decoration: BoxDecoration(
+//     color: Colors.grey[400],
+//    borderRadius: BorderRadius.all(Radius.circular(4)
+  
+//    )
+   
+//  ),
+//  child: Center(child: Text("Name"))
+// )),
+
+// SizedBox(
+//   width: MySize.size10,
+// ),
+// GestureDetector(
+
+//             onTap: (){
+              
+           
+//   if(_chosenValue=="ASC")
+//             {
+// jsonData.sort((a, b) => a["orderDate"].compareTo(b["orderDate"]));
+//             }
+//             else if(_chosenValue=="DES")
+//             {
+// jsonData.sort((a, b) => b["orderDate"].compareTo(a["orderDate"]));
+//             }           
+           
+
+// // jsonData;
+// setState(() {
+  
+// });
+//           },
+//   child:   Container(
+  
+//                        width:MySize.size80,
+  
+//                        height: MySize.size40,
+  
+//      decoration: BoxDecoration(
+  
+//       color: Colors.grey[400],
+  
+//      borderRadius: BorderRadius.all(Radius.circular(4)
+  
+    
+  
+//      )
+  
+     
+  
+//    ),
+  
+//    child: Center(child: Text("Order Date"))
+  
+//   ),
+// ),
+
+//               SizedBox(
+//                 width: MySize.size10,
+//               ) ,
+//               GestureDetector(
+//                           onTap: (){
+            
+//              if(_chosenValue=="ASC")
+//             {
+// jsonData.sort((a, b) => a["additionalCharges"].compareTo(b["additionalCharges"]));
+//             }
+//             else if(_chosenValue=="DES")
+//             {
+//               jsonData.sort((a, b) => b["additionalCharges"].compareTo(a["additionalCharges"]));
+
+//             }
+
+// // jsonData;
+// setState(() {
+  
+// });
+//           },
+
+//                 child: Container(
+//                        width:MySize.size60,
+//                        height: MySize.size40,
+//                  decoration: BoxDecoration(
+//                   color: Colors.grey[400],
+//                  borderRadius: BorderRadius.all(Radius.circular(4)
+                
+//                  )
+                 
+//                ),
+//                child: Center(child: Text("Charges"))
+//               ),
+//               ),
+//               SizedBox(
+//                 width:MySize.size10
+//                 ),
+//               GestureDetector(
+//                           onTap: (){
+//               if(_chosenValue=="ASC")
+//             {
+// jsonData.sort((a, b) => a["previousAmount"].compareTo(b["previousAmount"]));
+//             }
+//             else if(_chosenValue=="DES")
+//             {
+// jsonData.sort((a, b) => b["previousAmount"].compareTo(a["previousAmount"]));
+//             }
+           
+
+// // jsonData;
+// setState(() {
+  
+// });
+//           },
+//                 child: Container(
+//                        width:MySize.size80,
+//                        height: MySize.size40,
+//                  decoration: BoxDecoration(
+//                   color: Colors.grey[400],
+//                  borderRadius: BorderRadius.all(Radius.circular(4)
+                
+//                  )
+                 
+//                ),
+//                child: Center(child: Text("P Amount"))
+//               ),
+//               ),
+//             SizedBox(width: MySize.size10,),
+//             GestureDetector(
+//                         onTap: (){
+//               if(_chosenValue=="ASC")
+//             {
+// jsonData.sort((a, b) => a["shipmentTrackingNumber"].compareTo(b["shipmentTrackingNumber"]));
+//             }
+//             else if(_chosenValue=="DES")
+//             {
+// jsonData.sort((a, b) => b["shipmentTrackingNumber"].compareTo(a["shipmentTrackingNumber"]));
+//             }
+           
+
+// // jsonData;
+
+// setState(() {
+  
+// });
+//           },
+//               child: Container(
+//                        width:MySize.size60,
+//                        height: MySize.size40,
+//                decoration: BoxDecoration(
+//                 color: Colors.grey[400],
+//                borderRadius: BorderRadius.all(Radius.circular(4)
+              
+//                )
+               
+//              ),
+//              child: Center(child: Text("Track ID"))
+//             ),
+//             )
+//               ],
+//             ),
+//           ),
+          
            
         Container(
           // height: MediaQuery.of(context).size.height * 0.8,
@@ -688,9 +908,7 @@ setState(() {
                 );
               },
             ),
-         
           ),
-         
         ),
       ],
     );

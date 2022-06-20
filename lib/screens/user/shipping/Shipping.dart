@@ -318,6 +318,7 @@ class _ShippingState extends State<Shipping> {
     
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text('Shipping'),

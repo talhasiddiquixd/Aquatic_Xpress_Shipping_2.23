@@ -36,7 +36,7 @@ class SplashScreenView extends StatelessWidget {
     return new SplashScreen(
       navigateAfterFuture: loadFromFuture(context),
       title: new Text(
-        'Aquatic Shipping Xpress',
+        'Aquatic Xpress Shipping',
         style: new TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: MySize.size26,

@@ -30,6 +30,69 @@ class _UsersState extends State<Users> {
     
   }
 
+  List searchJson=[];
+List jsonData=[];
+String ?_chosenValue="ASC";
+String ?chosenFieldValue;
+ TextEditingController txtQuery = new TextEditingController();
+  late ThemeData themeData;
+  
+  void search(String query) {
+  if (query.isEmpty) {
+    // jsonData.clear();
+    jsonData = searchJson;
+    setState(() {});
+    return;
+  }
+
+  query = query.toLowerCase();
+  print(query);
+  List result = [];
+  jsonData.forEach((p) {
+
+    var name =p["userName"].toString().toLowerCase();
+    if (name.contains(query)) {
+      result.add(p);
+    }
+
+     name =p["firstName"].toString().toLowerCase();
+    if (name.contains(query)) {
+      result.add(p);
+    }
+     name =p["lastName"].toString().toLowerCase();
+    if (name.contains(query)) {
+      result.add(p);
+    }
+    name=p["email"].toString().toLowerCase();
+    if( name.contains(query))
+    {
+      result.add(p);
+    }
+
+    name=p["margin"].toString().toLowerCase();
+    if( name.contains(query))
+    {
+      result.add(p);
+    }
+    name=p["fedexMargin"].toString().toLowerCase();
+    if( name.contains(query))
+    {
+      result.add(p);
+    }
+  });
+ var data = result;
+ List orders=[];
+orders.addAll(data);
+var uniqueData = orders.map((o) => o).toSet();
+ result.clear();
+result.addAll(uniqueData);
+// var uniqueCount = uniqueIds.length;
+
+  jsonData = result;
+  setState(() {});
+}
+
+
   int? _value;
   int? _emailValue;
   var data;
@@ -68,7 +131,7 @@ class _UsersState extends State<Users> {
     String ?link =
         "${getCloudUrl()}/api/auth/deleteuser";
     var url = Uri.parse(link);
-    var response = await http.delete(url,
+    var response = await http.post(url,
         headers: {
           "Authorization": "Bearer $token",
           "Content-Type": "application/json"
@@ -110,6 +173,18 @@ class _UsersState extends State<Users> {
     print(response.body);
     if (response.statusCode == 200) {
       data = json.decode(response.body);
+       jsonData.clear();
+    try {
+            for(int i=0; i<data!.length; i++)
+            { 
+            jsonData.add(data[i]);
+            searchJson.add(data[i]);
+            print(jsonData);
+            } 
+              
+            } catch (e) {
+              print(e);
+            }
       return data;
     } else {
       print("Exception");
@@ -125,7 +200,7 @@ class _UsersState extends State<Users> {
         "${getCloudUrl()}/api/auth/changeuserstatus";
 
     var url = Uri.parse(link);
-    var response = await http.put(url,
+    var response = await http.post(url,
         headers: {
           "Authorization": "Bearer $token",
           "Content-Type": "application/json"
@@ -154,9 +229,514 @@ class _UsersState extends State<Users> {
 
   @override
   Widget build(BuildContext context) {
+    themeData = Theme.of(context);
     MySize().init(context);
     return Scaffold(
-      body: FutureBuilder(
+      body: Column(
+      
+      children: [
+        Padding(
+          padding:  EdgeInsets.only(left: MySize.size10, top:MySize.size10, right:MySize.size10),
+          child:
+          TextFormField(
+  controller: txtQuery,
+  onChanged: search,
+  decoration: InputDecoration(
+  filled: true,
+  fillColor: themeData.backgroundColor,
+      hintText: "Search",
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(4.0)),
+      focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: themeData.primaryColor),
+      borderRadius: BorderRadius.circular(15.0),
+      ),
+      prefixIcon: Icon(Icons.search),
+      suffixIcon: IconButton(
+        icon: Icon(Icons.clear),
+        onPressed: () {
+          txtQuery.text = '';
+          search(txtQuery.text);
+        },
+      ),
+  ),
+),
+    
+              ),
+   Padding(
+  padding:  EdgeInsets.only(left:MySize.size40),
+  child:   Row(
+  
+    children: [
+  
+          DropdownButton<String>(
+  
+      
+  
+          focusColor:Colors.white,
+  
+      
+  
+      dropdownColor:themeData.backgroundColor,
+  
+      
+  
+                  value: _chosenValue,
+  
+      
+  
+                  //elevation: 5,
+  
+      
+  
+                  style: TextStyle(color: Colors.black),
+  
+      
+  
+      
+  
+      
+  
+                  items: <String>[
+  
+      
+  
+                    'ASC',
+  
+      
+  
+                    'DES',
+  
+      
+  
+                  ].map<DropdownMenuItem<String>>((String value) {
+  
+      
+  
+                    return DropdownMenuItem<String>(
+  
+      
+  
+                      value: value,
+  
+      
+  
+                      child: Text(value),
+  
+      
+  
+                    );
+  
+      
+  
+                  }).toList(),
+  
+      
+  
+                  hint: Text(
+  
+      
+  
+                    "Sort",
+  
+      
+  
+                    style: TextStyle(
+  
+      
+  
+                        color: Colors.black,
+  
+      
+  
+                        fontSize: 16,
+  
+      
+  
+                        fontWeight: FontWeight.w600),
+  
+      
+  
+                  ),
+  
+      
+  
+                  onChanged: (String ?value) {
+  
+      
+  
+                    setState(() {
+  
+      
+  
+                      _chosenValue = value;
+  
+      
+  
+                    });
+  
+      
+  
+                  }),
+  
+  
+  
+                  Padding(
+                    padding: EdgeInsets.only(left:MySize.size20),
+                    child: DropdownButton<String>(
+  
+      focusColor:Colors.white,
+  
+  dropdownColor:themeData.backgroundColor,
+  
+              value: chosenFieldValue,
+  
+              //elevation: 5,
+  
+              style: TextStyle(color: Colors.black),
+  
+  
+  
+              items: <String>[
+  
+                'User',
+                'UPS Margin',
+                'Fedex Margin',
+                'Email',
+                
+  
+              ].map<DropdownMenuItem<String>>((String value) {
+  
+                return DropdownMenuItem<String>(
+  
+                    value: value,
+  
+                    child: Text(value),
+  
+                );
+  
+              }).toList(),
+  
+              hint: Text(
+  
+                "Choose field to Sort",
+  
+                style: TextStyle(
+  
+                      color: Colors.black,
+  
+                      fontSize: 16,
+  
+                      fontWeight: FontWeight.w600),
+  
+              ),
+  
+              onChanged: (String ?value) {
+  
+                setState(() {
+  
+                    chosenFieldValue = value;
+  
+                });
+  
+              }),
+                  ),
+  
+  
+
+               Padding(
+  padding:  EdgeInsets.only(left:MySize.size10),
+  child:   GestureDetector(
+    onTap: (){
+      if(_chosenValue=="ASC" )
+{
+  if(chosenFieldValue=="User")
+  {
+jsonData.sort((a, b) => a["userName"].compareTo(b["userName"]));
+setState(() {
+  
+});
+print(jsonData[0]["userAddress"]["lastName"].toString());
+  }
+  else if(chosenFieldValue=="UPS Margin")
+  {
+    jsonData.sort((a, b) => a["margin"].compareTo(b["margin"]));
+    setState(() {
+  
+});
+  }
+  else if(chosenFieldValue=="Fedex Margin")
+  {
+    jsonData.sort((a, b) => a["fedexMargin"].compareTo(b["fedexMargin"]));
+    setState(() {
+  
+});
+
+  }
+  else if (chosenFieldValue=="Email")
+  {
+    jsonData.sort((a, b) => a["email"].compareTo(b["email"]));
+
+setState(() {
+  
+});
+
+  }
+  
+}
+else if(_chosenValue=="DES")
+{
+  if(chosenFieldValue=="User")
+  {
+jsonData.sort((a, b) => b["userName"].compareTo(a["userName"]));
+setState(() {
+  
+});
+print(jsonData[0]["userAddress"]["lastName"].toString());
+  }
+  else if(chosenFieldValue=="UPS Margin")
+  {
+    jsonData.sort((a, b) => b["margin"].compareTo(a["margin"]));
+    setState(() {
+  
+});
+  }
+  else if(chosenFieldValue=="Fedex Margin")
+  {
+    jsonData.sort((a, b) => b["fedexMargin"].compareTo(a["fedexMargin"]));
+    setState(() {
+  
+});
+
+  }
+  else if (chosenFieldValue=="Email")
+  {
+    jsonData.sort((a, b) => b["email"].compareTo(a["email"]));
+
+setState(() {
+  
+});
+
+  }
+}
+    },
+    child: Container(
+    
+                         width:MySize.size60,
+    
+                         height: MySize.size40,
+    
+       decoration: BoxDecoration(
+    
+        color: Colors.grey[400],
+    
+       borderRadius: BorderRadius.all(Radius.circular(4)
+    
+      
+    
+       )
+    
+       
+    
+     ),
+    
+     child: Center(child: Text("Sort"))
+    
+    ),
+  ),
+)  
+    
+    
+    
+    
+    ],
+  
+  ),
+),
+          
+          
+// DropdownButton<String>(
+//     focusColor:Colors.white,
+// dropdownColor:themeData.backgroundColor,
+//             value: _chosenValue,
+//             //elevation: 5,
+//             style: TextStyle(color: Colors.black),
+
+//             items: <String>[
+//               'ASC',
+//               'DES',
+//             ].map<DropdownMenuItem<String>>((String value) {
+//               return DropdownMenuItem<String>(
+//                 value: value,
+//                 child: Text(value),
+//               );
+//             }).toList(),
+//             hint: Text(
+//               "Please choose a Sorting Format",
+//               style: TextStyle(
+//                   color: Colors.black,
+//                   fontSize: 16,
+//                   fontWeight: FontWeight.w600),
+//             ),
+//             onChanged: (String ?value) {
+//               setState(() {
+//                 _chosenValue = value;
+//               });
+//             }),
+
+//            Padding(
+//         padding:  EdgeInsets.only(left:MySize.size20, bottom: MySize.size20, top:MySize.size10),
+//             child: Row(
+//               mainAxisAlignment: MainAxisAlignment.start,
+//               children: [
+//                 // Icon(Icons.sort_by_alpha_sharp),
+//                 SizedBox(),
+//                 GestureDetector(
+//                             onTap: (){
+//             if(_chosenValue=="ASC")
+//             {
+// jsonData.sort((a, b) => a["userName"].compareTo(b["userName"]));
+//             }
+//             else if(_chosenValue=="DES")
+//             {
+// jsonData.sort((a, b) => b["userName"].compareTo(a["userName"]));
+//             }
+           
+
+// // jsonData;
+// setState(() {
+  
+// });
+//           },
+//                   child: Container(
+//                      width:MySize.size60,
+//                      height: MySize.size40,
+//    decoration: BoxDecoration(
+//     color: Colors.grey[400],
+//    borderRadius: BorderRadius.all(Radius.circular(4)
+  
+//    )
+   
+//  ),
+//  child: Center(child: Text("User"))
+// )),
+
+// SizedBox(
+//   width: MySize.size10,
+// ),
+// GestureDetector(
+
+//             onTap: (){
+           
+           
+//   if(_chosenValue=="ASC")
+//             {
+// jsonData.sort((a, b) => a["margin"].compareTo(b["margin"]));
+//             }
+//             else if(_chosenValue=="DES")
+//             {
+// jsonData.sort((a, b) => b["margin"].compareTo(a["margin"]));
+//             }           
+           
+
+// // jsonData;
+// setState(() {
+  
+// });
+//           },
+//   child:   Container(
+  
+//                        width:MySize.size90,
+  
+//                        height: MySize.size40,
+  
+//      decoration: BoxDecoration(
+  
+//       color: Colors.grey[400],
+  
+//      borderRadius: BorderRadius.all(Radius.circular(4)
+  
+    
+  
+//      )
+  
+     
+  
+//    ),
+  
+//    child: Center(child: Text("Ups Margin"))
+  
+//   ),
+// ),
+
+//               SizedBox(
+//                 width: MySize.size10,
+//               ) ,
+//               GestureDetector(
+//              onTap: () {
+//             if(_chosenValue=="ASC")
+//             {
+//               jsonData.sort((a, b) => a["fedexMargin"].compareTo(b["fedexMargin"]));
+//             }
+//             else if(_chosenValue=="DES")
+//             {
+//               jsonData.sort((a, b) => b["fedexMargin"].compareTo(a["fedexMargin"]));
+
+//             }
+//              setState(() {});
+//           },
+
+//                 child: Container(
+//                        width:MySize.size8=90,
+//                        height: MySize.size40,
+//                  decoration: BoxDecoration(
+//                   color: Colors.grey[400],
+//                  borderRadius: BorderRadius.all(Radius.circular(4)
+                
+//                  )
+                 
+//                ),
+//                child: Center(child: Text("Fedex Margin"))
+//               ),
+//               ),
+//               SizedBox(
+//                 width:MySize.size10
+//                 ),
+//               GestureDetector(
+//                           onTap: (){
+//               if(_chosenValue=="ASC")
+//             {
+//              jsonData.sort((a, b) => a["email"].compareTo(b["email"]));
+//             }
+//             else if(_chosenValue=="DES")
+//             {
+//              jsonData.sort((a, b) => b["email"].compareTo(a["email"]));
+//             }
+// // jsonData;
+//               setState(() {});
+//           },
+//                 child: Container(
+//                        width:MySize.size60,
+//                        height: MySize.size40,
+//                  decoration: BoxDecoration(
+//                   color: Colors.grey[400],
+//                  borderRadius: BorderRadius.all(Radius.circular(4)
+                
+//                  )
+                 
+//                ),
+//                child: Center(child: Text("Email"))
+//               ),
+//               ),
+            
+//               ],
+//             ),
+//           ),
+          
+           
+        Container(
+          // height: MediaQuery.of(context).size.height * 0.8,
+          // padding: EdgeInsets.only(bottom: MySize.size40),
+          child: Expanded(
+            child: FutureBuilder(
         future: futureUserList,
         builder: (BuildContext context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
@@ -164,7 +744,7 @@ class _UsersState extends State<Users> {
               return Container(
               
                 child: ListView.builder(
-                  itemCount: (snapshot.data as List).length,
+                  itemCount: jsonData.length,
                   itemBuilder: (BuildContext context, int index) {
                     return Column(
                       children: [
@@ -179,11 +759,11 @@ class _UsersState extends State<Users> {
                               padding: EdgeInsets.zero,
                               child: ExpansionTile(
                                 trailing: SizedBox.shrink(),
-                                title: Text((snapshot.data as List)[index]
+                                title: Text(jsonData[index]
                                             ["firstName"]
                                         .toString() +
                                     " " +
-                                    (snapshot.data as List)[index]["lastName"]
+                                    jsonData[index]["lastName"]
                                         .toString()),
                                 subtitle: Row(
                                   mainAxisAlignment:
@@ -192,17 +772,29 @@ class _UsersState extends State<Users> {
                                     Row(
                                       children: [
                                         Text("UPS Margin: "),
-                                        Text((snapshot.data as List)[index]
+                                        Text(jsonData[index]
                                                 ["margin"]
                                             .toString()),
                                       ],
                                     ),
                                     Row(
                                       children: [
-                                        Text("Fedex Margin: "),
-                                        Text((snapshot.data as List)[index]
-                                                ["fedexMargin"]
-                                            .toString()),
+                                         Text(
+                                              "Status: ",
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            Text(jsonData[index]
+                                                            ["status"]
+                                                        .toString() ==
+                                                    "true"
+                                                ? "Approved"
+                                                : "Not Approved")
+                                        // Text("Fedex Margin: "),
+                                        // Text(jsonData[index]
+                                        //         ["fedexMargin"]
+                                        //     .toString()),
                                       ],
                                     )
                                   ],
@@ -221,7 +813,7 @@ class _UsersState extends State<Users> {
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
-                                            Text((snapshot.data as List)[index]
+                                            Text(jsonData[index]
                                                     ["email"]
                                                 .toString())
                                           ],
@@ -234,7 +826,7 @@ class _UsersState extends State<Users> {
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
-                                            Text((snapshot.data as List)[index]
+                                            Text(jsonData[index]
                                                     ["userName"]
                                                 .toString())
                                           ],
@@ -247,25 +839,23 @@ class _UsersState extends State<Users> {
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
-                                            Text((snapshot.data as List)[index]
-                                                    ["phoneNumber"]
-                                                .toString())
+                                            jsonData[index]["phoneNumber"]==null?Text("N/A"):Text(jsonData[index]["phoneNumber"].toString())
                                           ],
                                         ),
                                         Row(
                                           children: [
-                                            Text(
-                                              "Status: ",
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            Text((snapshot.data as List)[index]
-                                                            ["status"]
-                                                        .toString() ==
-                                                    "true"
-                                                ? "Approved"
-                                                : "Not Approved")
+                                            // Text(
+                                            //   "Status: ",
+                                            //   style: TextStyle(
+                                            //     fontWeight: FontWeight.bold,
+                                            //   ),
+                                            // ),
+                                            // Text(jsonData[index]
+                                            //                 ["status"]
+                                            //             .toString() ==
+                                            //         "true"
+                                            //     ? "Approved"
+                                            //     : "Not Approved")
                                           ],
                                         ),
                                         Row(
@@ -276,7 +866,7 @@ class _UsersState extends State<Users> {
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
-                                            Text((snapshot.data as List)[index]
+                                            Text(jsonData[index]
                                                             ["emailConfirmed"]
                                                         .toString() ==
                                                     "true"
@@ -306,27 +896,23 @@ class _UsersState extends State<Users> {
                                                 ),
                                               ),
                                               onPressed: () {
-                                                if ((snapshot.data
-                                                                as List)[index]
+                                                if (jsonData[index]
                                                             ["status"]
                                                         .toString() ==
                                                     "true") {
                                                   _value = 1;
-                                                } else if ((snapshot.data
-                                                                as List)[index]
+                                                } else if (jsonData[index]
                                                             ["status"]
                                                         .toString() ==
                                                     "false") {
                                                   _value = 0;
                                                 }
-                                                if ((snapshot.data
-                                                                as List)[index]
+                                                if (jsonData[index]
                                                             ["emailConfirmed"]
                                                         .toString() ==
                                                     "true") {
                                                   _emailValue = 1;
-                                                } else if ((snapshot.data
-                                                                as List)[index]
+                                                } else if (jsonData[index]
                                                             ["emailConfirmed"]
                                                         .toString() ==
                                                     "false") {
@@ -334,18 +920,15 @@ class _UsersState extends State<Users> {
                                                 }
 
                                                 _shippingBottomSheet(
-                                                    (snapshot.data
-                                                                as List)[index]
+                                                    jsonData[index]
                                                             ["fedexMargin"]
                                                         .toString(),
-                                                    (snapshot.data
-                                                                as List)[index]
+                                                    jsonData[index]
                                                             ["margin"]
                                                         .toString(),
                                                     _value,
                                                     _emailValue,
-                                                    (snapshot.data
-                                                                as List)[index]
+                                                    jsonData[index]
                                                             ["id"]
                                                         .toString(),
                                                     context);
@@ -397,8 +980,7 @@ class _UsersState extends State<Users> {
                                                     MaterialPageRoute(
                                                       builder: (context) =>
                                                           Label(
-                                                        id: (snapshot.data
-                                                                    as List)[
+                                                        id: jsonData[
                                                                 index]["id"]
                                                             .toString(),
                                                       ),
@@ -474,8 +1056,7 @@ class _UsersState extends State<Users> {
                                                                   .text
                                                                   .isNotEmpty)
                                                                 postCreditData(
-                                                                    (snapshot.data
-                                                                                as List)[index]
+                                                                    jsonData[index]
                                                                             [
                                                                             "id"]
                                                                         .toString(),
@@ -516,8 +1097,7 @@ class _UsersState extends State<Users> {
                                                         builder:
                                                             (context) =>
                                                                 Usercredit(
-                                                                  id: (snapshot.data
-                                                                              as List)[index]
+                                                                  id: jsonData[index]
                                                                           ["id"]
                                                                       .toString(),
                                                                 )));
@@ -557,7 +1137,11 @@ class _UsersState extends State<Users> {
           }
         },
       ),
-    );
+    ),
+        ),
+      ],
+    )
+  );
   }
 
   Widget customTextField(

@@ -95,9 +95,9 @@ class _CartState extends State<Cart> {
     String? token = await getToken();
 
     String ?link =
-        "${getCloudUrl()}/api/Products/removefromcart/$id";
+        "${getCloudUrl()}/api/Products/removefromcart?id=$id";
     var url = Uri.parse(link);
-    var response = await http.delete(
+    var response = await http.post(
       url,
       headers: {
         "Authorization": "Bearer $token",

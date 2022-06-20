@@ -23,6 +23,6 @@ Widget customTextField(
       enabledBorder: InputBorder.none,
       focusedBorder: InputBorder.none,
     ),
-    keyboardType: TextInputType.number,
+    keyboardType: TextInputType.visiblePassword,
   );
 }

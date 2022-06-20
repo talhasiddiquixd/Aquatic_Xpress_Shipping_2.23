@@ -31,7 +31,8 @@ getUsersAnnouncements() async {
     String? token = await getToken();
 
     String ?link =
-        "${getCloudUrl()}/api/Auth/GetAnnoucement";
+        // "${getCloudUrl()}/api/Auth/GetAnnoucement";
+        "${getCloudUrl()}api/credit/getUserUpChargeHistory";
     // "${getCloudUrl()}​/api​/ShipmentOrder​/getfedexorderlist";
 
     var url = Uri.parse(link);
@@ -57,7 +58,7 @@ getUsersAnnouncements() async {
   @override
   void initState() {
     super.initState();
-  
+  futureUserList=getUsersAnnouncements();
   }
 
   
@@ -66,43 +67,70 @@ getUsersAnnouncements() async {
   Widget build(BuildContext context) {
     themeData = Theme.of(context);
 
-    return Scaffold(
-        appBar: AppBar(
-          title: Text("Service Upcharge"),
-        ),
-        body: Column(
-          children: [
-            Expanded(
-              child: FutureBuilder(
-                future: futureUserList,
-                builder: (BuildContext context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    if (snapshot.hasData) {
-                      return listData.length!= 0
-                ? UpchargeService(data: snapshot.data)
-                : Center(
-                    child: Image.asset(
-                    "assets/images/no_data_found.jpg",
-                  )
-                    // Image.asset(
+    // return Scaffold(
+    //     appBar: AppBar(
+    //       title: Text("Service Upcharge"),
+    //     ),
+    //     body: FutureBuilder(
+    //       future: futureUserList,
+    //       builder: (BuildContext context, snapshot) {
+    //         if (snapshot.connectionState == ConnectionState.done) {
+    //           if (snapshot.hasData) {
+    //             return listData.length!= 0
+    //       ? UpchargeService(data: snapshot.data)
+    //       : Center(
+    //           child: Image.asset(
+    //           "assets/images/no_data_found.jpg",
+    //         )
+    //           // Image.asset(
 
-                    );
+    //           );
+    //       } else {
+    //     return Container(
+    //     height: MediaQuery.of(context).size.height * 0.35,
+    //     child: Center(
+    //         child: Image.asset(
+    //       "assets/images/no_data_found.jpg",
+    //     )),
+    //     );
+    //       }
+    //     } else {
+    //       return listViewWithoutLeadingPictureWithoutExpandedSkeleton(context);
+    //     }
+    //   },
+    // ));
+
+    return Scaffold(
+appBar: AppBar(title: Text("Service upCharge"),),
+      body: FutureBuilder(
+        future: futureUserList,
+        builder: (BuildContext contesxt, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasData) {
+              return (snapshot.data as List).length != 0
+                  ? UpchargeService(data: snapshot.data,)
+                  : Center(
+                      child: Image.asset(
+                      "assets/images/no_data_found.jpg",
+                    )
+                      // Image.asset(
+    
+                      );
+            } else {
+              return Container(
+                height: MediaQuery.of(context).size.height * 0.35,
+                child: 
+                Center(
+                    child: Image.asset(
+                  "assets/images/no_data_found.jpg",
+                )),
+              );
+            }
           } else {
-            return Container(
-              height: MediaQuery.of(context).size.height * 0.35,
-              child: Center(
-                  child: Image.asset(
-                "assets/images/no_data_found.jpg",
-              )),
-            );
+            return listViewWithoutLeadingPictureWithoutExpandedSkeleton(context);
           }
-        } else {
-          return listViewWithoutLeadingPictureWithoutExpandedSkeleton(context);
-        }
-      },
-    )
-            ),
-          ],
-        ));
+        },
+      ),
+    );
   }
 }

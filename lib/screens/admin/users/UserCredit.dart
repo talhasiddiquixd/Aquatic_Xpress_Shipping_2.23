@@ -49,7 +49,7 @@ class _UsercreditState extends State<Usercredit> {
     String ?link =
         "${getCloudUrl()}/api/credit/updateCredit";
     var url = Uri.parse(link);
-    var response = await http.put(url,
+    var response = await http.post(url,
         headers: {
           "Authorization": "Bearer $token",
           "Content-Type": "application/json"
@@ -73,10 +73,9 @@ class _UsercreditState extends State<Usercredit> {
     String? token = await getToken();
 
     String ?link =
-        "${getCloudUrl()}/api/credit/deleteCreditByAdmin/" +
-            id.toString();
+        "${getCloudUrl()}/api/credit/deleteCreditByAdmin/$id";
     var url = Uri.parse(link);
-    var response = await http.delete(
+    var response = await http.post(
       url,
       headers: {
         "Authorization": "Bearer $token",

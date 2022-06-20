@@ -1,25 +1,66 @@
+import 'dart:convert';
+
+import 'package:another_flushbar/flushbar.dart';
+import 'package:aquatic_xpress_shipping/models/SharedPref.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:aquatic_xpress_shipping/AppTheme.dart';
-import 'package:aquatic_xpress_shipping/size_config.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class CustomListView extends StatefulWidget {
-  final data;
-final value;
-  const CustomListView({Key? key, required this.data, this.value}) : super(key: key);
+import '../../../AppTheme.dart';
+import '../../../size_config.dart';
+import 'package:http/http.dart' as http;
 
+
+class GuarnteeList extends StatefulWidget {
+  const GuarnteeList({Key? key, this.data}) : super(key: key);
+  final data;
   @override
-  _CustomListViewState createState() => _CustomListViewState();
+  _GuarnteeListState createState() => _GuarnteeListState();
 }
 
-class _CustomListViewState extends State<CustomListView> {
-  late ThemeData themeData;
-  String ? chosenFieldValue;
-String ?_chosenValue="ASC";
-List jsonData=[];
+class _GuarnteeListState extends State<GuarnteeList> {
 List searchJson=[];
- TextEditingController txtQuery = new TextEditingController();
+List jsonData=[];
+String ?_chosenValue="ASC";
+String? chosenFieldValue;
+TextEditingController txtQuery = new TextEditingController();
+  late ThemeData themeData;
+
+  changeStatus(id, index) async {
+    String? token = await getToken();
+
+    String ?link =
+        "${getCloudUrl()}/api/ShipmentOrder/UpdateAppliedForStatusUPS?id=$id";
+    var url = Uri.parse(link);
+    var response = await http.post(url,
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json"
+        },
+      
+    );
+   
+
+    if (response.statusCode == 200) {
+      
+       Flushbar(
+       title:"Successfull",
+       message:"Status Changed",
+       duration:Duration(seconds:3),)..show(context);
+         jsonData[index]["isAppliedforRefund"] =true;
+      setState(() {});
+      print(response.statusCode);
+    } else {
+       Flushbar(
+       title:"Staus Changed",
+       message:"",
+       duration:Duration(seconds:3),)..show(context);
+      print("Exception");
+      throw Error;
+    }
+  }
+
+  
   void search(String query) {
   if (query.isEmpty) {
     jsonData = searchJson;
@@ -35,26 +76,25 @@ List searchJson=[];
     if (name.contains(query)) {
       result.add(p);
     }
-    name =p["orderDate"].toString().toLowerCase();
-    if (name.contains(query)) {
-      result.add(p);
-    }
-    name =p["addressBook"]["lastName"].toString().toLowerCase();
-    if (name.contains(query)) {
-      result.add(p);
-    }
-    name =p["totalPrice"].toString().toLowerCase();
-    if (name.contains(query)) {
-      result.add(p);
-    }
+    // name =p["userBook"]["lastName"].toString().toLowerCase();
+    // if (name.contains(query)) {
+    //   result.add(p);
+    // }
     name =p["trackingNumber"].toString().toLowerCase();
     if (name.contains(query)) {
       result.add(p);
     }
+    name =p["deliveryDate"].toString().toLowerCase();
+    if (name.contains(query)) {
+      result.add(p);
+    }
+    name =p["expectedDate"].toString().toLowerCase();
+    if (name.contains(query)) {
+      result.add(p);
+    }
   });
-  
-    
-var data = result;
+
+  var data = result;
  List orders=[];
 orders.addAll(data);
 var uniqueData = orders.map((o) => o).toSet();
@@ -63,11 +103,10 @@ result.addAll(uniqueData);
 // var uniqueCount = uniqueIds.length;
 
  
+
   jsonData = result;
   setState(() {});
-}
-
-  openURl(id) async {
+}  openURl(id) async {
     if (await canLaunch(
         "https://wwwapps.ups.com/WebTracking/processInputRequest?sort_by=status&tracknums_displ%20ayed=1&TypeOfInquiryNumber=T&loc=en_US&InquiryNumber1=" +
             id +
@@ -80,8 +119,7 @@ result.addAll(uniqueData);
       throw "could not URL";
     }
   }
-
-   @override
+@override
   void initState() { 
     super.initState();
     jsonData.clear();
@@ -89,20 +127,12 @@ result.addAll(uniqueData);
 
       jsonData.addAll(widget.data);
       searchJson.addAll(widget.data);
-            // for(int i=0; i<widget.data!.length; i++)
-            // { 
-            // jsonData.add(widget.data[i]);
-            // searchJson.add(widget.data[i]);
-            // print(jsonData);
-            // } 
-              
             } catch (e) {
               print(e);
             }
             
   }
-
-@override
+  @override
   Widget build(BuildContext context) {
     themeData = Theme.of(context);
     return 
@@ -141,119 +171,32 @@ Padding(
   child:   Row(
   
     children: [
-  
           DropdownButton<String>(
-  
-      
-  
           focusColor:Colors.white,
-  
-      
-  
       dropdownColor:themeData.backgroundColor,
-  
-      
-  
                   value: _chosenValue,
-  
-      
-  
-                  //elevation: 5,
-  
-      
-  
-                  style: TextStyle(color: Colors.black),
-  
-      
-  
-      
-  
-      
-  
+                   style: TextStyle(color: Colors.black),
                   items: <String>[
-  
-      
-  
                     'ASC',
-  
-      
-  
                     'DES',
-  
-      
-  
                   ].map<DropdownMenuItem<String>>((String value) {
-  
-      
-  
                     return DropdownMenuItem<String>(
-  
-      
-  
                       value: value,
-  
-      
-  
                       child: Text(value),
-  
-      
-  
                     );
-  
-      
-  
                   }).toList(),
-  
-      
-  
                   hint: Text(
-  
-      
-  
                     "Sort",
-  
-      
-  
-                    style: TextStyle(
-  
-      
-  
-                        color: Colors.black,
-  
-      
-  
+                     style: TextStyle(
+                      color: Colors.black,
                         fontSize: 16,
-  
-      
-  
                         fontWeight: FontWeight.w600),
-  
-      
-  
                   ),
-  
-      
-  
                   onChanged: (String ?value) {
-  
-      
-  
                     setState(() {
-  
-      
-  
                       _chosenValue = value;
-  
-      
-  
                     });
-  
-      
-  
                   }),
-  
-  
-  
                   Padding(
                     padding: EdgeInsets.only(left:MySize.size20),
                     child: DropdownButton<String>(
@@ -272,11 +215,11 @@ Padding(
   
               items: <String>[
   
-                'Sender',
+                'Sender Name',
                 'Order Date',
-                'Reciever',
-                'Price',
-                'Tracking'
+                'Reciever Name',
+                'Delivery Date',
+                'Expected Date'
   
               ].map<DropdownMenuItem<String>>((String value) {
   
@@ -323,12 +266,13 @@ Padding(
     onTap: (){
       if(_chosenValue=="ASC" )
 {
-  if(chosenFieldValue=="Sender")
+  if(chosenFieldValue=="Sender Name")
   {
 jsonData.sort((a, b) => a["userAddress"]["lastName"].compareTo(b["userAddress"]["lastName"]));
 setState(() {
   
 });
+print(jsonData[0]["userAddress"]["lastName"].toString());
   }
   else if(chosenFieldValue=="Order Date")
   {
@@ -337,7 +281,7 @@ setState(() {
   
 });
   }
-  else if(chosenFieldValue=="Reciever")
+  else if(chosenFieldValue=="Reciever Name")
   {
     jsonData.sort((a, b) => a["addressBook"]["lastName"].compareTo(b["addressBook"]["lastName"]));
     setState(() {
@@ -345,17 +289,17 @@ setState(() {
 });
 
   }
-  else if (chosenFieldValue=="Price")
+  else if (chosenFieldValue=="Delivery Date")
   {
- jsonData.sort((a, b) => a["totalPrice"].compareTo(b["totalPrice"]));
+jsonData.sort((a, b) => a["deliveryDate"].compareTo(b["deliveryDate"]));
 setState(() {
   
 });
 
   }
-  else if (chosenFieldValue=="Tracking")
+  else if (chosenFieldValue=="Expected Date")
   {
-    jsonData.sort((a, b) => a["trackingNumber"].compareTo(b["trackingNumber"]));
+    jsonData.sort((a, b) => a["expectedDate"].compareTo(b["expectedDate"]));
     setState(() {
   
 });
@@ -363,7 +307,7 @@ setState(() {
 }
 else if(_chosenValue=="DES")
 {
-   if(chosenFieldValue=="Sender")
+  if(chosenFieldValue=="Sender Name")
   {
 jsonData.sort((a, b) => b["userAddress"]["lastName"].compareTo(a["userAddress"]["lastName"]));
 setState(() {
@@ -377,7 +321,7 @@ setState(() {
   
 });
   }
-  else if(chosenFieldValue=="Reciever")
+  else if(chosenFieldValue=="Reciever Name")
   {
     jsonData.sort((a, b) => b["addressBook"]["lastName"].compareTo(a["addressBook"]["lastName"]));
     setState(() {
@@ -385,17 +329,17 @@ setState(() {
 });
 
   }
-  else if (chosenFieldValue=="Price")
+  else if (chosenFieldValue=="Delivery Date")
   {
- jsonData.sort((a, b) => b["totalPrice"].compareTo(a["totalPrice"]));
+jsonData.sort((a, b) => b["deliveryDate"].compareTo(a["deliveryDate"]));
 setState(() {
   
 });
 
   }
-  else if (chosenFieldValue=="Tracking")
+  else if (chosenFieldValue=="Expected Date")
   {
-    jsonData.sort((a, b) => b["trackingNumber"].compareTo(a["trackingNumber"]));
+    jsonData.sort((a, b) => b["expectedDate"].compareTo(a["expectedDate"]));
     setState(() {
   
 });
@@ -435,11 +379,7 @@ setState(() {
   
   ),
 ),
-          
-
-          
-           
-        Container(
+  Container(
           // height: MediaQuery.of(context).size.height * 0.8,
           // padding: EdgeInsets.only(bottom: MySize.size40),
           child: Expanded(
@@ -459,117 +399,84 @@ setState(() {
                   ),
                   child: ListTileTheme(
                     // dense: true,
- 
+
                     contentPadding: EdgeInsets.fromLTRB(MySize.size10, 0, 0, 0),
                     child: ExpansionTile(
                       trailing: SizedBox.shrink(),
                       // trailing: Text(''),
-                      title: Column(
+                      title: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Row(
                             children: [
                               Text(
-                                "Sender: ",
-                                style: AppTheme.getTextStyle(
-                                  themeData.textTheme.button,
-                                  fontWeight: 600,
-                                ),
-                              ),
-                              Text(
-                                // widget.data[index]["user"]["recieverName"].toString(),
-                                jsonData[index]["userAddress"]["lastName"]
-                                    .toString(),
-                                style: AppTheme.getTextStyle(
-                                  themeData.textTheme.button,
-                                  fontWeight: 550,
-                                ),
-                              ),
-                         
+                                  "Order Date: " , style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),),
+                                  Text(
+                                      DateFormat("yyyy-MM-dd").format(
+                                        DateTime.parse(jsonData[index]
+                                                ["orderDate"]
+                                            .toString()),
+                                      ),
+                                  style: AppTheme.getTextStyle(
+                                    themeData.textTheme.button,
+                                    fontWeight: 600,
+                                  )),
                             ],
                           ),
-                        Row(
-                        children: [ 
-                          Text("Reciever:", style: AppTheme.getTextStyle(
-                                  themeData.textTheme.button,
-                                  fontWeight: 600,
-                                ),),
-                                Text(jsonData[index]["addressBook"]["lastName"].toString(),                                style: AppTheme.getTextStyle(
-                                  themeData.textTheme.button,
-                                  fontWeight: 550,
-),),
-
-                        ],)
-
+                          // Row(
+                          //   children: [
+                          //     Text(
+                          //       "Charges:\$",
+                          //       style: AppTheme.getTextStyle(
+                          //         themeData.textTheme.button,
+                          //         fontWeight: 550,
+                          //       ),
+                          //     ),
+                          //     Text(
+                          //       widget.data[index]["additionalCharges"]
+                          //           .toString(),
+                          //       style: AppTheme.getTextStyle(
+                          //         themeData.textTheme.button,
+                          //         fontWeight: 550,
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
                         ],
                       ),
                       subtitle: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Expanded(
-                            child: Row(
-                              children: [
-                                Text(
-                                  "Status: ",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Text(
-                                  jsonData[index]["status"].toString() == 'C'
-                                      ? "In Process"
-                                      : jsonData[index]["status"].toString() ==
-                                              'V'
-                                          ? "Canceled"
-                                          : jsonData[index]["status"]
-                                                      .toString() ==
-                                                  'I'
-                                              ? "Transit"
-                                              : jsonData[index]["status"]
-                                                          .toString() ==
-                                                      'V'
-                                                  ? "Completed"
-                                                  : "Recieved",
-                                ),
-                                // Text(
-                                //   "Status: ",
-                                //   style: AppTheme.getTextStyle(
-                                //     themeData.textTheme.button,
-                                //     fontWeight: 600,
-                                //   ),
-                                // ),
-                                // Text(
-                                //   widget.data[index]["status"].toString(),
-                                //   style: AppTheme.getTextStyle(
-                                //     themeData.textTheme.button,
-                                //     fontWeight: 550,
-                                //   ),
-                                // ),
-                              ],
-                            ),
-                          ),
-                            Row( 
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          Row(
                             children: [
                               Text(
-                                "Price: ",
+                                " ",
                                 style: AppTheme.getTextStyle(
                                   themeData.textTheme.button,
                                   fontWeight: 600,
                                 ),
                               ),
                               Text(
-                                jsonData[index]["totalPrice"],
-                                style: AppTheme.getTextStyle(
-                                  themeData.textTheme.button,
-                                  fontWeight: 550,
-                                ),
+                                "Sender Name: " ,style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),),
+                                    Text(jsonData[index]["userAddress"]["lastName"].toString()
+                                
                               ),
                             ],
                           ),
                           Row(
                             children: [
-                              
+                              // // Text(
+                              // //   "UserName:" +
+                              // //       widget.data[index]["userName"].toString(),
+                              // //   style: AppTheme.getTextStyle(
+                              // //     themeData.textTheme.button,
+                              // //     fontWeight: 550,
+                              // //   ),
+                              // ),
                             ],
                           )
                         ],
@@ -580,42 +487,34 @@ setState(() {
                               MySize.size10, 0, MySize.size36, MySize.size10),
                           child: Column(
                             children: [
-                                   Row(
-                                     mainAxisAlignment:MainAxisAlignment.spaceBetween ,
-                                     children: [
-                                       Text("Order Date:",style: AppTheme.getTextStyle(
-                                                                     themeData.textTheme.button,
-                                                                     fontWeight: 600,
-                                                                   ),),
-                                           Text(
-                                                                       DateFormat("yyyy-MM-dd").format(
-                                                                         DateTime.parse(jsonData[index]
-                                                                                 ["orderDate"]
-                                                                             .toString()),
-                                                                       ),
-                                                                     ),
-                                     ],
-                                   ),
-                              // Row(
-                              //   mainAxisAlignment:
-                              //       MainAxisAlignment.spaceBetween,
-                              //   children: [],
-                              // ),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    "EST: ",
+                                    "Reciever Name: ",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  Text(jsonData[index]
-                              ["daysInTransit"].toString())
+                                  Text(jsonData[index]["addressBook"]["lastName"]),
                                 ],
                               ),
-                             
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  // // Text(
+                                  // //   "previousAmount: ",
+                                  // //   style: TextStyle(
+                                  // //     fontWeight: FontWeight.bold,
+                                  // //   ),
+                                  // // ),
+                                  // Text("\$" +
+                                  //     widget.data[index]["previousAmount"]
+                                  //         .toString())
+                                ],
+                              ),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -628,11 +527,12 @@ setState(() {
                                   ),
                                   GestureDetector(
                                     onTap: () {
-                                      openURl(
-                                          jsonData[index]["trackingNumber"]);
+                                      openURl(jsonData[index]
+                                          ["trackingNumber"]);
                                     },
                                     child: Text(
-                                      jsonData[index]["trackingNumber"]
+                                      jsonData[index]
+                                              ["trackingNumber"]
                                           .toString(),
                                       style: TextStyle(color: Colors.blue),
                                     ),
@@ -643,14 +543,16 @@ setState(() {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  // Text(
-                                  //   "Days in Transit: ",
-                                  //   style: TextStyle(
-                                  //     fontWeight: FontWeight.bold,
-                                  //   ),
-                                  // ),
-                                  // Text(widget.data[index]["daysInTransit"]
-                                  //     .toString())
+                                  Text(
+                                    "Delivery Date: ",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(  DateFormat("yyyy-MM-dd").format(
+                                        DateTime.parse(
+                                    jsonData[index]["deliveryDate"]
+                                      .toString()))),
                                 ],
                               ),
                               Row(
@@ -658,62 +560,82 @@ setState(() {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    "Service: ",
+                                    "Expected Delivery ",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  Text(jsonData[index]["orderService"]
-                                      .toString())
+                                  Text(   DateFormat("yyyy-MM-dd").format(
+                                        DateTime.parse(jsonData[index]["expectedDate"]
+                                      .toString()))),
                                 ],
                               ),
-                               Row(
+                                Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    "Margin: ",
+                                    "Action:",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  Text(jsonData[index]["margin"].toString())
+                                 jsonData[index]["isAppliedforRefund"]==null? Text("Change Status to Applied"):Text(
+                                "Applied")
                                 ],
                               ),
-                              // Row(
+                              // Column(
                               //   mainAxisAlignment:
                               //       MainAxisAlignment.spaceBetween,
                               //   children: [
                               //     Text(
-                              //       "Status: ",
+                              //       "Reason: ",
                               //       style: TextStyle(
                               //         fontWeight: FontWeight.bold,
                               //       ),
                               //     ),
-                              //     Text(
-                              //         widget.data[index]["status"].toString() ==
-                              //                 "true"
-                              //             ? "Approved"
-                              //             : "Not Approved")
                               //   ],
                               // ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  // Text(
-                                  //   "Email Confirmed: ",
-                                  //   style: TextStyle(
-                                  //     fontWeight: FontWeight.bold,
-                                  //   ),
-                                  // ),
-                                  // Text(widget.data[index]["emailConfirmed"]
-                                  //             .toString() ==
-                                  //         "true"
-                                  //     ? "Verified"
-                                  //     : "Not Verified")
-                                ],
-                              ),
+                              // Wrap(
+                              //   children: [
+                              //     Text(widget.data[index]["reason"].toString()),
+                              //   ],
+                              // ),
+                              // Column(
+                              //   children: [
+                              //     Text(
+                              //       "Address: ",
+                              //       style: TextStyle(
+                              //         fontWeight: FontWeight.bold,
+                              //       ),
+                              //     ),
+                              //   ],
+                              // ),
+                              // Wrap(
+                              //   children: [
+                              //     Text(widget.data[index]["shipmentAddress"]
+                              //         .toString()),
+                              //   ],
+                              // )
+                            
+                             jsonData[index]["isAppliedforRefund"]!=null?Container(): ElevatedButton(
+                                              style: ButtonStyle(
+                                                foregroundColor:
+                                                    MaterialStateProperty.all<
+                                                        Color>(
+                                                  Colors.black,
+                                                ),
+                                                backgroundColor:
+                                                    MaterialStateProperty.all<
+                                                        Color>(
+                                                  Colors.yellow.shade600,
+                                                ),
+                                              ),
+                                              onPressed: () {
+                                                changeStatus(jsonData[index]["id"].toString(), jsonData[index]);
+                                              },
+                                              child: Text("Change Status"),
+                                            ),
                             ],
                           ),
                         ),
@@ -726,10 +648,10 @@ setState(() {
           );
         },
       ),
-    ),
+),
         ),
       ],
     );
+  
   }
 }
-  
